@@ -1,0 +1,33 @@
+{
+	"id": "12bee9a1-9e32-4c61-8043-47114a5722d5",
+	"name": "HalkOde_Test",
+	"values": [
+		{
+			"key": "base_url",
+			"value": "https://testapp.halkode.com.tr/ccpayment",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "merchant_key",
+			"value": "$2y$10$j91kzXcjmHW5gb6J9oxtgeHnQpNJTm70Xd9yMcDjH0kWjgB7rjtlC",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "app_id",
+			"value": "564df882ce96feb86c3ec0b47a862699",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "app_secret",
+			"value": "d017c8fe0ec7dcf2772ea4ee532aa8a6",
+			"type": "default",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2024-04-02T13:38:11.825Z",
+	"_postman_exported_using": "Postman/10.24.11"
+}

@@ -1,0 +1,29 @@
+ <html>
+ <title>Vpos</title>
+ <body>
+     <form name="form" action="https://testapp.halkode.com.tr/ccpayment/api/paySmart3D" method="POST">
+         <input type="hidden" name="cc_holder_name" value="Test kart">
+         <input type="hidden" name="cc_no" value="4132260000000003">
+         <input type="hidden" name="expiry_month" value="11">
+         <input type="hidden" name="expiry_year" value="2027">
+		 <input type="hidden" name="cvv" value="193">
+         <input type="hidden" name="currency_code" value="TRY">
+         <input type="hidden" name="installments_number" value="1">
+         <input type="hidden" name="invoice_id" value="asd123gba1a">
+         <input type="hidden" name="invoice_description" value="INVOICE TEST DESCRIPTION">
+         <input type="hidden" name="total" value="17.00">
+         <input type="hidden" name="items" value='[{"name":"Item3","price":17,"quantity":1,"description":"item3 description"}]'>
+         <input type="hidden" name="name" value="John">
+		 <input type="hidden" name="surname" value="Dao">
+		 <input type="hidden" name="return_url" value="https://www.google.com/">
+		 <input type="hidden" name="cancel_url" value="https://www.github.com/">
+		 <input type="hidden" name="payment_completed_by" value="merchant">
+		 <input type="hidden" name="merchant_key" value="$2y$10$e8Mzadv9523RVrAqL7K3.efxdERBrbaVZNaJ3AwlmZriYNrygSH72">
+		 <input type="hidden" name="hash_key" value="180e930c4bb10d7a:c386:Wo0HYbZR+TWDCSdCwz9SWVc5FSKwQIk1an5bRt13rtibvo2__j0__CVLAgvWB1uffdIUK4K9BfNai9BtaXQ6pEaqu8l64Tx19AVTd6EF0STVH+eGNXtK8YTcIDOEsNNXjA">
+     </form> 
+ </body> 
+ <script type="text/javascript">
+     var form = document.forms[0]
+     form.submit();
+ </script>
+ </html>

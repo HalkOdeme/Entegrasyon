@@ -1,0 +1,1107 @@
+{
+	"info": {
+		"_postman_id": "c1f0b887-b2c0-4e62-9439-fdbfc68f0d52",
+		"name": "PlatformOde Api Entegrasyonu",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29376111"
+	},
+	"item": [
+		{
+			"name": "Get Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = JSON.parse(responseBody);",
+							"pm.collectionVariables.set(\"access_token\", response.data.token);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"app_id\": \"{{app_id}}\",\n    \"app_secret\": \"{{app_secret}}\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/token",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Purchase Link",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \n    \"merchant_key\":\"{{merchant_key}}\",\n    \"currency_code\":\"TRY\",\n    \"invoice\":\"{\\\"invoice_id\\\":\\\"example-132\\\",\\\"invoice_description\\\":\\\"Testdescription\\\",\\\"total\\\":10.00,\\\"return_url\\\":\\\"https://google.com.tr\\\",\\\"cancel_url\\\":\\\"https://github.com.tr\\\",\\\"items\\\":[{\\\"name\\\":\\\"Item1\\\",\\\"price\\\":10,\\\"quantity\\\":1,\\\"description\\\":\\\"Test\\\"}]}\",\n    \"name\":\"John\",\n    \"surname\":\"Dao\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/purchase/link",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"purchase",
+						"link"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PaySmart2D",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (typeof CryptoJS === 'undefined') {\r",
+							"    var CryptoJS = require('crypto-js');\r",
+							"}\r",
+							"\r",
+							"function generateHashKey(total, installment, currency_code, merchant_key, invoice_id, app_secret) {\r",
+							"    const data = total + '|' + installment + '|' + currency_code + '|' + merchant_key + '|' + invoice_id;\r",
+							"\r",
+							"    const iv = CryptoJS.lib.WordArray.random(16).toString(CryptoJS.enc.Hex).substring(0, 16);\r",
+							"\r",
+							"    const password = CryptoJS.SHA1(app_secret).toString(CryptoJS.enc.Hex);\r",
+							"\r",
+							"    const salt = CryptoJS.lib.WordArray.random(4).toString(CryptoJS.enc.Hex).substring(0, 4);\r",
+							"\r",
+							"    const saltWithPassword = CryptoJS.SHA256(password + salt).toString(CryptoJS.enc.Hex);\r",
+							"\r",
+							"    const encrypted = Encryptor(data, saltWithPassword.substring(0, 32), iv);\r",
+							"\r",
+							"    let msg_encrypted_bundle = iv + ':' + salt + ':' + encrypted.toString();\r",
+							"    msg_encrypted_bundle = msg_encrypted_bundle.replace(/\\//g, '__');\r",
+							"\r",
+							"    return msg_encrypted_bundle;\r",
+							"}\r",
+							"\r",
+							"function Encryptor(TextToEncrypt, strKey, strIV) {\r",
+							"    const PlainTextBytes = CryptoJS.enc.Utf8.parse(TextToEncrypt);\r",
+							"\r",
+							"    const aesParams = {\r",
+							"        mode: CryptoJS.mode.CBC,\r",
+							"        padding: CryptoJS.pad.Pkcs7,\r",
+							"        iv: CryptoJS.enc.Utf8.parse(strIV),\r",
+							"        keySize: 256 / 32,\r",
+							"        key: CryptoJS.enc.Utf8.parse(strKey)\r",
+							"    };\r",
+							"\r",
+							"    const encrypted = CryptoJS.AES.encrypt(PlainTextBytes, aesParams.key, aesParams);\r",
+							"\r",
+							"    return encrypted.toString();\r",
+							"}\r",
+							"\r",
+							"\r",
+							"var requestBody = pm.request.body.toString()\r",
+							"    .replace(/{{|}}/g, '')\r",
+							"    .replace(/\\\\\"|\"(?:\\\\\"|[^\"])*\"|(\\/\\/.*|\\/\\*[\\s\\S]*?\\*\\/)/g, (match, group) => group ? \"\" : match);\r",
+							"\r",
+							"var requestBodyJson = JSON.parse(requestBody);\r",
+							"\r",
+							"const app_secret = pm.variables.get('app_secret');\r",
+							"\r",
+							"const hashKey = generateHashKey(\r",
+							"    requestBodyJson.total, \r",
+							"    requestBodyJson.installments_number, \r",
+							"    requestBodyJson.currency_code, \r",
+							"    pm.variables.get('merchant_key'),\r",
+							"    requestBodyJson.invoice_id, \r",
+							"    app_secret);\r",
+							"\r",
+							"pm.environment.set('hash_key', hashKey);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"cc_holder_name\":\"Test kart\",\r\n    \"cc_no\":\"4132260000000003\",\r\n    \"expiry_month\":\"12\",\r\n    \"expiry_year\":\"2024\",\r\n    \"cvv\":\"555\",\r\n    \"currency_code\":\"TRY\", \r\n    \"installments_number\": 1,\r\n    \"invoice_id\":\"Abcd1245671\",\r\n    \"invoice_description\":\" INVOICE TEST DESCRIPTION\",\r\n    \"total\":22.00,\r\n    \"items\":[{\"name\":\"Item3\",\"price\":22,\"quantity\":1,\"description\":\"item3 description\"}],\r\n    \"name\" : \"John\",\r\n    \"surname\" : \"Dao\",\r\n    \"merchant_key\":\"{{merchant_key}}\",\r\n    \"hash_key\" : \"{{hash_key}}\"\r\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/paySmart2D",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"paySmart2D"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PaySmart3D",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (typeof CryptoJS === 'undefined') {\r",
+							"    var CryptoJS = require('crypto-js');\r",
+							"}\r",
+							"\r",
+							"function generateHashKey(total, installment, currency_code, merchant_key, invoice_id, app_secret) {\r",
+							"    const data = total + '|' + installment + '|' + currency_code + '|' + merchant_key + '|' + invoice_id;\r",
+							"\r",
+							"    const iv = CryptoJS.lib.WordArray.random(16).toString(CryptoJS.enc.Hex).substring(0, 16);\r",
+							"\r",
+							"    const password = CryptoJS.SHA1(app_secret).toString(CryptoJS.enc.Hex);\r",
+							"\r",
+							"    const salt = CryptoJS.lib.WordArray.random(4).toString(CryptoJS.enc.Hex).substring(0, 4);\r",
+							"\r",
+							"    const saltWithPassword = CryptoJS.SHA256(password + salt).toString(CryptoJS.enc.Hex);\r",
+							"\r",
+							"    const encrypted = Encryptor(data, saltWithPassword.substring(0, 32), iv);\r",
+							"\r",
+							"    let msg_encrypted_bundle = iv + ':' + salt + ':' + encrypted.toString();\r",
+							"    msg_encrypted_bundle = msg_encrypted_bundle.replace(/\\//g, '__');\r",
+							"\r",
+							"    return msg_encrypted_bundle;\r",
+							"}\r",
+							"\r",
+							"function Encryptor(TextToEncrypt, strKey, strIV) {\r",
+							"    const PlainTextBytes = CryptoJS.enc.Utf8.parse(TextToEncrypt);\r",
+							"\r",
+							"    const aesParams = {\r",
+							"        mode: CryptoJS.mode.CBC,\r",
+							"        padding: CryptoJS.pad.Pkcs7,\r",
+							"        iv: CryptoJS.enc.Utf8.parse(strIV),\r",
+							"        keySize: 256 / 32,\r",
+							"        key: CryptoJS.enc.Utf8.parse(strKey)\r",
+							"    };\r",
+							"\r",
+							"    const encrypted = CryptoJS.AES.encrypt(PlainTextBytes, aesParams.key, aesParams);\r",
+							"\r",
+							"    return encrypted.toString();\r",
+							"}\r",
+							"\r",
+							"// Send with Form-Data Method - Start\r",
+							"// const formdata = pm.request.body.formdata;\r",
+							"// const total = formdata.find(p => p.key == \"total\").value;\r",
+							"// const installments_number = formdata.find(p => p.key == \"installments_number\").value;\r",
+							"// const currency_code = formdata.find(p => p.key == \"currency_code\").value;\r",
+							"// const merchant_key = pm.variables.get('merchant_key');\r",
+							"// const invoice_id = formdata.find(p => p.key == \"invoice_id\").value;\r",
+							"\r",
+							"// const app_secret = pm.variables.get(\"app_secret\");\r",
+							"\r",
+							"// const hashKey = generateHashKey(\r",
+							"//     total,\r",
+							"//     installments_number,\r",
+							"//     currency_code,\r",
+							"//     merchant_key,\r",
+							"//     invoice_id,\r",
+							"//     app_secret);\r",
+							"// Send with Form-Data - Finish\r",
+							"\r",
+							"\r",
+							"// Send with Raw Method - Start\r",
+							" var requestBody = pm.request.body.toString()\r",
+							"     .replace(/{{|}}/g, '')\r",
+							"     .replace(/\\\\\"|\"(?:\\\\\"|[^\"])*\"|(\\/\\/.*|\\/\\*[\\s\\S]*?\\*\\/)/g, (match, group) => group ? \"\" : match);\r",
+							"\r",
+							" var requestBodyJson = JSON.parse(requestBody);\r",
+							"\r",
+							" const app_secret = pm.variables.get(\"app_secret\");\r",
+							"\r",
+							" const hashKey = generateHashKey(\r",
+							"    requestBodyJson.total,\r",
+							"    requestBodyJson.installments_number,\r",
+							"    requestBodyJson.currency_code,\r",
+							"    pm.variables.get('merchant_key'),\r",
+							"    requestBodyJson.invoice_id,\r",
+							"    app_secret);\r",
+							" //Send with Raw Method - Finish\r",
+							"\r",
+							"pm.environment.set('hash_key', hashKey);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"/*\r",
+							"\r",
+							"Manuel olarak 3d hash key oluşturmak için aşağıdaki web sitesine gidiniz ve tüm kodları yapıştırıp Run butonuna basınız.\r",
+							"https://dotnetfiddle.net/\r",
+							"\r",
+							"\r",
+							"using System;\r",
+							"using System.Security.Cryptography;\r",
+							"using System.Text;\r",
+							"using System.Linq;\r",
+							"\t\t\t\t\t\r",
+							"public class Program\r",
+							"{\r",
+							"\tpublic static void Main()\r",
+							"\t{\r",
+							"\t\t// Lütfen total, installment, currency_code, merchant_key ve invoice_id bilgilerini kontrol ediniz. Aşağıdaki alanları oluşturmak istediğiniz 3d key bilgilerine göre düzenleyiniz.\r",
+							"\t\t\r",
+							"\t\tstring appSecret = \"d017c8fe0ec7dcf2772ea4ee532aa8a6\";\t\t\t// app secret\r",
+							"\t\tstring merchant_key = \"$2y$10$j91kzXcjmHW5gb6J9oxtgeHnQpNJTm70Xd9yMcDjH0kWjgB7rjtlC\";\t\t\t// merchant_key\r",
+							"\t\tstring total = \"18\";\t\t\t\t\t\t\t\t\t\t\t// total\r",
+							"\t\tstring installment = \"1\";\t\t\t\t\t\t\t\t\t\t// installment\r",
+							"\t\tstring currency_code = \"TRY\";\t\t\t\t\t\t\t\t\t// currency_code\r",
+							"\t\tstring invoice_id = \"assd123gba1a\";\t\t\t\t\t\t\t\t// invoice_id\r",
+							"\t\t\r",
+							"\t\tvar threeDHashKey = GenerateHashKey(\r",
+							"\t\t\tappSecret,\r",
+							"\t\t\ttotal,\r",
+							"\t\t\tinstallment,\r",
+							"\t\t\tcurrency_code,\r",
+							"\t\t\tmerchant_key,\r",
+							"\t\t\tinvoice_id\r",
+							"\t\t); \r",
+							"\t\t\r",
+							"\t\tConsole.WriteLine(\"3D Hash key için girilen parametreler\");\r",
+							"\t\tConsole.WriteLine(\"appSecret : \" + appSecret);\r",
+							"\t\tConsole.WriteLine(\"merchant_key : \" + merchant_key);\r",
+							"\t\tConsole.WriteLine(\"total : \" + total);\r",
+							"\t\tConsole.WriteLine(\"installment : \" + installment);\r",
+							"\t\tConsole.WriteLine(\"currency_code : \" + currency_code);\r",
+							"\t\tConsole.WriteLine(\"invoice_id : \" + invoice_id);\r",
+							"\t\t\r",
+							"\t\tConsole.WriteLine();\r",
+							"\t\tConsole.WriteLine(\"Oluşan 3D Hash Key Bilgisi : \");\r",
+							"\t\tConsole.WriteLine(threeDHashKey);\r",
+							"\t}\r",
+							"\t\r",
+							"    public static string GenerateHashKey(string appSecret, params string[] subjects)\r",
+							"    {\r",
+							"        StringBuilder builder = new StringBuilder();\r",
+							"        for (int i = 0; i < subjects.Length; i++)\r",
+							"        {\r",
+							"            builder.Append(subjects[i]);\r",
+							"\r",
+							"            if (i < subjects.Length - 1)\r",
+							"                builder.Append('|');\r",
+							"        }\r",
+							"\r",
+							"        string data = builder.ToString();\r",
+							"\r",
+							"        Random mt_rand = new Random();\r",
+							"\r",
+							"        string iv = Sha1Hash(mt_rand.Next().ToString()).Substring(0, 16);\r",
+							"\r",
+							"        string password = Sha1Hash(appSecret);\r",
+							"        string salt = Sha1Hash(mt_rand.Next().ToString()).Substring(0, 4);\r",
+							"        string saltWithPassword = \"\";\r",
+							"\r",
+							"        using (SHA256 sha256Hash = SHA256.Create())\r",
+							"        {\r",
+							"            saltWithPassword = GetHash(sha256Hash, password + salt);\r",
+							"        }\r",
+							"\r",
+							"        string encrypted = Encryptor(data, saltWithPassword.Substring(0, 32), iv);\r",
+							"\r",
+							"        string msg_encrypted_bundle = iv + \":\" + salt + \":\" + encrypted;\r",
+							"        msg_encrypted_bundle = msg_encrypted_bundle.Replace(\"/\", \"__\");\r",
+							"\r",
+							"        return msg_encrypted_bundle;\r",
+							"    }\r",
+							"\t\r",
+							"    private static string Sha1Hash(string password)\r",
+							"    {\r",
+							"        return string.Join(\"\", SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes(password)).Select(x => x.ToString(\"x2\")));\r",
+							"    }\r",
+							"\t\r",
+							"    private static string GetHash(HashAlgorithm hashAlgorithm, string input)\r",
+							"    {\r",
+							"        byte[] data = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(input));\r",
+							"        var sBuilder = new StringBuilder();\r",
+							"\r",
+							"        for (int i = 0; i < data.Length; i++)\r",
+							"        {\r",
+							"            sBuilder.Append(data[i].ToString(\"x2\"));\r",
+							"        }\r",
+							"\r",
+							"        return sBuilder.ToString();\r",
+							"    }\r",
+							"\t\r",
+							"    private static string Encryptor(string TextToEncrypt, string strKey, string strIV)\r",
+							"    {\r",
+							"        byte[] PlainTextBytes = Encoding.UTF8.GetBytes(TextToEncrypt);\r",
+							"\r",
+							"        AesCryptoServiceProvider aesProvider = new AesCryptoServiceProvider();\r",
+							"        aesProvider.BlockSize = 128;\r",
+							"        aesProvider.KeySize = 256;\r",
+							"        aesProvider.Key = Encoding.UTF8.GetBytes(strKey);\r",
+							"        aesProvider.IV = Encoding.UTF8.GetBytes(strIV);\r",
+							"        aesProvider.Padding = PaddingMode.PKCS7;\r",
+							"        aesProvider.Mode = CipherMode.CBC;\r",
+							"\r",
+							"        ICryptoTransform cryptoTransform = aesProvider.CreateEncryptor(aesProvider.Key, aesProvider.IV);\r",
+							"        byte[] EncryptedBytes = cryptoTransform.TransformFinalBlock(PlainTextBytes, 0, PlainTextBytes.Length);\r",
+							"\r",
+							"        return Convert.ToBase64String(EncryptedBytes);\r",
+							"    }\r",
+							"}\r",
+							"\r",
+							"*/"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"cc_holder_name\":\"Test kart\",\r\n    \"cc_no\":\"4132260000000003\",\r\n    \"expiry_month\":\"11\",\r\n    \"expiry_year\":\"2027\",\r\n    \"currency_code\":\"TRY\", \r\n    \"installments_number\": 1,\r\n    \"invoice_id\":\"sTf1131\",\r\n    \"invoice_description\":\" INVOICE TEST DESCRIPTION\",\r\n    \"total\":14.00,\r\n    \"items\":[{\"name\":\"Item3\",\"price\":14,\"quantity\":1,\"description\":\"item3 description\"}],\r\n    \"name\" : \"John\",\r\n    \"surname\" : \"Dao\",\r\n\t\"return_url\" : \"https://www.google.com/\",\r\n\t\"cancel_url\" : \"https://www.github.com/\",\r\n\t\"payment_completed_by\" : \"merchant\",\r\n    \"merchant_key\":\"{{merchant_key}}\",\r\n    \"hash_key\" : \"{{hash_key}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/paySmart3D",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"paySmart3D"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Refund API",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (typeof CryptoJS === 'undefined') {\r",
+							"    var CryptoJS = require('crypto-js');\r",
+							"}\r",
+							"\r",
+							"function generateHashKey(amount, invoice_id, merchant_key, app_secret) {\r",
+							"    const data = amount + '|' + invoice_id + '|' + merchant_key;\r",
+							"\r",
+							"    const iv = CryptoJS.lib.WordArray.random(16).toString(CryptoJS.enc.Hex).substring(0, 16);\r",
+							"\r",
+							"    const password = CryptoJS.SHA1(app_secret).toString(CryptoJS.enc.Hex);\r",
+							"\r",
+							"    const salt = CryptoJS.lib.WordArray.random(4).toString(CryptoJS.enc.Hex).substring(0, 4);\r",
+							"\r",
+							"    const saltWithPassword = CryptoJS.SHA256(password + salt).toString(CryptoJS.enc.Hex);\r",
+							"\r",
+							"    const encrypted = Encryptor(data, saltWithPassword.substring(0, 32), iv);\r",
+							"\r",
+							"    let msg_encrypted_bundle = iv + ':' + salt + ':' + encrypted.toString();\r",
+							"    msg_encrypted_bundle = msg_encrypted_bundle.replace(/\\//g, '__');\r",
+							"\r",
+							"    return msg_encrypted_bundle;\r",
+							"}\r",
+							"\r",
+							"function Encryptor(TextToEncrypt, strKey, strIV) {\r",
+							"    const PlainTextBytes = CryptoJS.enc.Utf8.parse(TextToEncrypt);\r",
+							"\r",
+							"    const aesParams = {\r",
+							"        mode: CryptoJS.mode.CBC,\r",
+							"        padding: CryptoJS.pad.Pkcs7,\r",
+							"        iv: CryptoJS.enc.Utf8.parse(strIV),\r",
+							"        keySize: 256 / 32,\r",
+							"        key: CryptoJS.enc.Utf8.parse(strKey)\r",
+							"    };\r",
+							"\r",
+							"    const encrypted = CryptoJS.AES.encrypt(PlainTextBytes, aesParams.key, aesParams);\r",
+							"\r",
+							"    return encrypted.toString();\r",
+							"}\r",
+							"\r",
+							"\r",
+							"var requestBody = pm.request.body.toString()\r",
+							"    .replace(/{{|}}/g, '')\r",
+							"    .replace(/\\\\\"|\"(?:\\\\\"|[^\"])*\"|(\\/\\/.*|\\/\\*[\\s\\S]*?\\*\\/)/g, (match, group) => group ? \"\" : match);\r",
+							"\r",
+							"var requestBodyJson = JSON.parse(requestBody);\r",
+							"\r",
+							"const app_secret = pm.variables.get(\"app_secret\");\r",
+							"\r",
+							"const hashKey = generateHashKey(\r",
+							"    requestBodyJson.amount,\r",
+							"    requestBodyJson.invoice_id,\r",
+							"    pm.variables.get('merchant_key'),\r",
+							"    app_secret);\r",
+							"\r",
+							"pm.environment.set('hash_key', hashKey);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjZjM2ExNzUxMTIxMDdmZWY5MGE2ZjZmMDMzNTkwNDMyOTA4MThkNDFlYThiOGUzMzk0YzhjOGUzZjEzMjk3ZGEwODc4MTlkZWQwYTU5Nzk4In0.eyJhdWQiOiIxMSIsImp0aSI6IjZjM2ExNzUxMTIxMDdmZWY5MGE2ZjZmMDMzNTkwNDMyOTA4MThkNDFlYThiOGUzMzk0YzhjOGUzZjEzMjk3ZGEwODc4MTlkZWQwYTU5Nzk4IiwiaWF0IjoxNjA1MTYxNDY2LCJuYmYiOjE2MDUxNjE0NjYsImV4cCI6MTYwNTE2ODY2NSwic3ViIjoiNiIsInNjb3BlcyI6W119.OMUdeAPmjQsBtPnCEuII__MriHqJx3vBAKH29Q1yXnSKwRl9ruSw17XE-gGN3FdQsdtG91nt0dWf9wQYxXCmTKKHC7ugWp3tZeeHyfITUyfOOE0HWPb1txoKS7tRg_DUGaYmPin-zNdYQWP-emv6ncBO0Nw0ZwrRAJFA-u4OXh3qXSiexvoNEOiasvmXxt0n0n4LBrO7sSYn_QHDns9_8RAnccmP1KPErb10GcG79aBRDrYgiD0WNp9GWjHCNesoL9ZqBnaC4A8OtxLjCAcTyh7QFhpqpUdfqENmMEeS2JTKIw0Z_W1pL8vNvnaj1C7LQiCrnZNEW8iapojhGE8WBVso_gmtoFMuOe_ykJS8XtxRv0syWOzjhfWB1mDIxhA82Zp_apAuleF-_8A7nmp9JCzQIdOJT1cT9C6OXdX-g4PLw8e2uml9ueaZdDDH9lyrPqBcfIIOTdX27WJ6p-qsoyKz2bKiULop2eF3GGzbicY8pgZZHGNr3f8M0bjNw8nLdjg5KGC4mKF_oiphjNiC6Cs4kzrlKSwhyuRV9Yv_nxyA9MSh5_nEyGLYo5TIzxMf3EMR-h8J6fQbH2XL4oIvkCpR0nycFLzbPG3RJwLTbhUp30Dr5OsNVD3X2izbvNCQF6q-TITKMy5sZYH4QKn-JyDgwSR5ZIcMeiyGwQRoQGA",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"invoice_id\": \"Abcd124567\",\r\n    \"amount\": 8.00,\r\n    \"app_id\": \"{{app_id}}\",\r\n    \"app_secret\": \"{{app_secret}}\",\r\n    \"merchant_key\": \"{{merchant_key}}\",\r\n    \"hash_key\": \"{{hash_key}}\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/refund",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"refund"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Checkstatus",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"invoice_id\":\"Abcd12456\",\r\n    \"merchant_key\":\"{{merchant_key}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/checkstatus",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"checkstatus"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Confirm Payment",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (typeof CryptoJS === 'undefined') {\r",
+							"    var CryptoJS = require('crypto-js');\r",
+							"}\r",
+							"\r",
+							" function generateHashKey(merchant_key, invoice_id, status, app_secret) {\r",
+							"    const data = merchant_key + '|' + invoice_id + '|' + status;\r",
+							"\r",
+							"    const iv = CryptoJS.lib.WordArray.random(16).toString(CryptoJS.enc.Hex).substring(0, 16);\r",
+							"\r",
+							"    const password = CryptoJS.SHA1(app_secret).toString(CryptoJS.enc.Hex);\r",
+							"\r",
+							"    const salt = CryptoJS.lib.WordArray.random(4).toString(CryptoJS.enc.Hex).substring(0, 4);\r",
+							"\r",
+							"    const saltWithPassword = CryptoJS.SHA256(password + salt).toString(CryptoJS.enc.Hex);\r",
+							"\r",
+							"    const encrypted = Encryptor(data, saltWithPassword.substring(0, 32), iv);\r",
+							"\r",
+							"    let msg_encrypted_bundle = iv + ':' + salt + ':' + encrypted.toString();\r",
+							"    msg_encrypted_bundle = msg_encrypted_bundle.replace(/\\//g, '__');\r",
+							"\r",
+							"    return msg_encrypted_bundle;\r",
+							"}\r",
+							"\r",
+							"function Encryptor(TextToEncrypt, strKey, strIV) {\r",
+							"    const PlainTextBytes = CryptoJS.enc.Utf8.parse(TextToEncrypt);\r",
+							"\r",
+							"    const aesParams = {\r",
+							"        mode: CryptoJS.mode.CBC,\r",
+							"        padding: CryptoJS.pad.Pkcs7,\r",
+							"        iv: CryptoJS.enc.Utf8.parse(strIV),\r",
+							"        keySize: 256 / 32,\r",
+							"        key: CryptoJS.enc.Utf8.parse(strKey)\r",
+							"    };\r",
+							"\r",
+							"    const encrypted = CryptoJS.AES.encrypt(PlainTextBytes, aesParams.key, aesParams);\r",
+							"\r",
+							"    return encrypted.toString();\r",
+							"}\r",
+							"\r",
+							"// Send with Raw Method - Start\r",
+							" var requestBody = pm.request.body.toString()\r",
+							"     .replace(/{{|}}/g, '')\r",
+							"     .replace(/\\\\\"|\"(?:\\\\\"|[^\"])*\"|(\\/\\/.*|\\/\\*[\\s\\S]*?\\*\\/)/g, (match, group) => group ? \"\" : match);\r",
+							"\r",
+							" var requestBodyJson = JSON.parse(requestBody);\r",
+							"\r",
+							" const app_secret = pm.variables.get(\"app_secret\");\r",
+							"\r",
+							" const hashKey = generateHashKey(\r",
+							"     pm.variables.get('merchant_key'),\r",
+							"     requestBodyJson.invoice_id,\r",
+							"     requestBodyJson.status,\r",
+							"     app_secret);\r",
+							"// Send with Raw Method - Finish\r",
+							"\r",
+							"\r",
+							"\r",
+							"// Send with Form-Data - Start\r",
+							"// const formdata = pm.request.body.formdata;\r",
+							"// const merchant_key = pm.variables.get('merchant_key');\r",
+							"// const invoice_id = formdata.find(p => p.key == \"invoice_id\").value;\r",
+							"// const status = formdata.find(p => p.key == \"status\").value;\r",
+							"\r",
+							"// const app_secret = pm.variables.get(\"app_secret\");\r",
+							"\r",
+							"// const hashKey = generateHashKey(\r",
+							"//     merchant_key,\r",
+							"//     invoice_id,\r",
+							"//     status,\r",
+							"//     app_secret);\r",
+							"// Send with Form-Data - Finish\r",
+							"\r",
+							"\r",
+							"pm.environment.set('hash_key', hashKey);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"total\":\"41280.68\",\r\n\t\"invoice_id\":\"s92711df41131\",\r\n    \"status\":\"1\",\r\n    \"merchant_key\":\"{{merchant_key}}\",\r\n\t\"hash_key\":\"{{hash_key}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/confirmPayment",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"confirmPayment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Installment",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"merchant_key\": \"{{merchant_key}}\"\r\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/installments",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"installments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Merchant Commissions",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"currency_code\": \"TRY\"\r\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/commissions",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"commissions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Pos",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"credit_card\":\"540061\",\r\n    \"amount\":\"100.00\",\r\n    \"currency_code\":\"TRY\",\r\n    \"merchant_key\":\"{{merchant_key}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/getpos",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"getpos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Transaction",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (typeof CryptoJS === 'undefined') {\r",
+							"    var CryptoJS = require('crypto-js');\r",
+							"}\r",
+							"\r",
+							"function generateHashKey(merchant_key, date, invoice_id, currency_id, payment_method_id, minamount, maxamount, transactionState) {\r",
+							"    const data = date + '|' + invoice_id + '|' + currency_id + '|' + payment_method_id + '|' + minamount + '|' + maxamount + '|' + transactionState;\r",
+							"    \r",
+							"    const iv = CryptoJS.lib.WordArray.random(16).toString(CryptoJS.enc.Hex).substring(0, 16);\r",
+							"\r",
+							"    const password = CryptoJS.SHA1(merchant_key).toString(CryptoJS.enc.Hex);\r",
+							"\r",
+							"    const salt = CryptoJS.lib.WordArray.random(4).toString(CryptoJS.enc.Hex).substring(0, 4);\r",
+							"\r",
+							"    const saltWithPassword = CryptoJS.SHA256(password + salt).toString(CryptoJS.enc.Hex);\r",
+							"\r",
+							"    const encrypted = Encryptor(data, saltWithPassword.substring(0, 32), iv);\r",
+							"\r",
+							"    let msg_encrypted_bundle = iv + ':' + salt + ':' + encrypted.toString();\r",
+							"    msg_encrypted_bundle = msg_encrypted_bundle.replace(/\\//g, '__');\r",
+							"\r",
+							"    return msg_encrypted_bundle;\r",
+							"}\r",
+							"\r",
+							"function Encryptor(TextToEncrypt, strKey, strIV) {\r",
+							"    const PlainTextBytes = CryptoJS.enc.Utf8.parse(TextToEncrypt);\r",
+							"\r",
+							"    const aesParams = {\r",
+							"        mode: CryptoJS.mode.CBC,\r",
+							"        padding: CryptoJS.pad.Pkcs7,\r",
+							"        iv: CryptoJS.enc.Utf8.parse(strIV),\r",
+							"        keySize: 256 / 32,\r",
+							"        key: CryptoJS.enc.Utf8.parse(strKey)\r",
+							"    };\r",
+							"\r",
+							"    const encrypted = CryptoJS.AES.encrypt(PlainTextBytes, aesParams.key, aesParams);\r",
+							"\r",
+							"    return encrypted.toString();\r",
+							"}\r",
+							"\r",
+							"\r",
+							"var requestBody = pm.request.body.toString()\r",
+							"    .replace(/{{|}}/g, '')\r",
+							"    .replace(/\\\\\"|\"(?:\\\\\"|[^\"])*\"|(\\/\\/.*|\\/\\*[\\s\\S]*?\\*\\/)/g, (match, group) => group ? \"\" : match);\r",
+							"\r",
+							"var requestBodyJson = JSON.parse(requestBody);\r",
+							"\r",
+							"const hashKey = generateHashKey(\r",
+							"    pm.variables.get('merchant_key') ?? \"\",\r",
+							"    requestBodyJson.date ?? \"\", \r",
+							"    requestBodyJson.invoiceid ?? \"\",\r",
+							"    requestBodyJson.currency_id ?? \"\",\r",
+							"    requestBodyJson.paymentmethodid ?? \"\",\r",
+							"    requestBodyJson.minamount ?? \"\", \r",
+							"    requestBodyJson.maxamount ?? \"\", \r",
+							"    requestBodyJson.transactionState ?? \"\");\r",
+							"\r",
+							"console.log('Hash Key: ' + hashKey);\r",
+							"\r",
+							"pm.environment.set('hash_key', hashKey);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"merchant_key\":\"{{merchant_key}}\",\r\n    \"hash_key\" : \"{{hash_key}}\",\r\n    \"date\":\"2024-04-17\",\r\n    \"invoiceid\":\"Abcd12456\"  // Optional\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/getTransactions",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"getTransactions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "All Transaction",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"merchant_key\":\"{{merchant_key}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/alltransaction",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"alltransaction"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Payment Complete",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (typeof CryptoJS === 'undefined') {\r",
+							"    var CryptoJS = require('crypto-js');\r",
+							"}\r",
+							"\r",
+							"function generateHashKey(merchant_key, invoice_id, order_id, status, app_secret) {\r",
+							"    const data = merchant_key + '|' + invoice_id + '|' + order_id + '|' + status;\r",
+							"\r",
+							"    const iv = CryptoJS.lib.WordArray.random(16).toString(CryptoJS.enc.Hex).substring(0, 16);\r",
+							"\r",
+							"    const password = CryptoJS.SHA1(app_secret).toString(CryptoJS.enc.Hex);\r",
+							"\r",
+							"    const salt = CryptoJS.lib.WordArray.random(4).toString(CryptoJS.enc.Hex).substring(0, 4);\r",
+							"\r",
+							"    const saltWithPassword = CryptoJS.SHA256(password + salt).toString(CryptoJS.enc.Hex);\r",
+							"\r",
+							"    const encrypted = Encryptor(data, saltWithPassword.substring(0, 32), iv);\r",
+							"\r",
+							"    let msg_encrypted_bundle = iv + ':' + salt + ':' + encrypted.toString();\r",
+							"    msg_encrypted_bundle = msg_encrypted_bundle.replace(/\\//g, '__');\r",
+							"\r",
+							"    return msg_encrypted_bundle;\r",
+							"}\r",
+							"\r",
+							"function Encryptor(TextToEncrypt, strKey, strIV) {\r",
+							"    const PlainTextBytes = CryptoJS.enc.Utf8.parse(TextToEncrypt);\r",
+							"\r",
+							"    const aesParams = {\r",
+							"        mode: CryptoJS.mode.CBC,\r",
+							"        padding: CryptoJS.pad.Pkcs7,\r",
+							"        iv: CryptoJS.enc.Utf8.parse(strIV),\r",
+							"        keySize: 256 / 32,\r",
+							"        key: CryptoJS.enc.Utf8.parse(strKey)\r",
+							"    };\r",
+							"\r",
+							"    const encrypted = CryptoJS.AES.encrypt(PlainTextBytes, aesParams.key, aesParams);\r",
+							"\r",
+							"    return encrypted.toString();\r",
+							"}\r",
+							"\r",
+							"\r",
+							"var requestBody = pm.request.body.toString()\r",
+							"    .replace(/{{|}}/g, '')\r",
+							"    .replace(/\\\\\"|\"(?:\\\\\"|[^\"])*\"|(\\/\\/.*|\\/\\*[\\s\\S]*?\\*\\/)/g, (match, group) => group ? \"\" : match);\r",
+							"\r",
+							"var requestBodyJson = JSON.parse(requestBody);\r",
+							"\r",
+							"const app_secret = pm.variables.get(\"app_secret\");\r",
+							"\r",
+							"const hashKey = generateHashKey(\r",
+							"    pm.variables.get('merchant_key'),\r",
+							"    requestBodyJson.invoice_id,\r",
+							"    requestBodyJson.order_id,\r",
+							"    requestBodyJson.status,\r",
+							"    app_secret);\r",
+							"\r",
+							"pm.environment.set('hash_key', hashKey);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"merchant_key\": \"{{merchant_key}}\",\r\n    \"hash_key\": \"{{hash_key}}\",\r\n    \"invoice_id\": \"s92711df41131\",\r\n    \"order_id\": \"VP17123239825285705\", \r\n    \"status\": \"complete\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/payment/complete",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"payment",
+						"complete"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "access_token",
+			"value": ""
+		}
+	]
+}
