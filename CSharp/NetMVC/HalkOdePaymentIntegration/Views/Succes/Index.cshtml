@@ -1,0 +1,43 @@
+﻿@{
+    ViewBag.Title = "İşlem Başarılı!";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+
+    <div class="container mt-4">
+        <h1>İşlem Başarılı!</h1>
+
+        <div class="result-item">
+            <span>order_no:</span> @ViewBag.OrderNo
+        </div>
+        <div class="result-item">
+            <span>order_id:</span> @ViewBag.OrderId
+        </div>
+        <div class="result-item">
+            <span>invoice_id:</span> @ViewBag.InvoiceId
+        </div>
+        <div class="result-item">
+            <span>status_code:</span> @ViewBag.StatusCode
+        </div>
+        <div class="result-item">
+            <span>transaction_type:</span> @ViewBag.TransactionType
+        </div>
+        <div class="result-item">
+            <span>payment_status:</span> @ViewBag.PaymentStatus
+        </div>
+        <div class="result-item">
+            <span>md_status:</span> @ViewBag.MdStatus
+        </div>
+    </div>
+
+</body>
+</html>

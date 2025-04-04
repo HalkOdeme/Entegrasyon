@@ -1,0 +1,102 @@
+﻿@using Newtonsoft.Json
+@{
+    ViewBag.Title = "Taksit Gösterme Entegrasyonu";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>@ViewBag.Title</title>
+</head>
+
+<body>
+    <div class="container mt-4">
+        <span style="color:#17456d"><h2>Taksit Gösterme Entegrasyonu</h2></span>
+
+        <!-- HTML Form for User Input -->
+        @using (Html.BeginForm("ProcessPayment", "GetPos", FormMethod.Post))
+
+        {
+            <div class="form-group">
+                <label for="credit_card" class="mt-2">Kredi Kartı Numarası:</label>
+                <input type="text" id="credit_card" placeholder="********************" name="credit_card" value="" onkeypress="return (event.charCode !=8 && event.charCode ==0 || ( event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)))" maxlength="20" class="form-control" required><HalkOdePaymentIntegration>
+            </div>
+            <div class="form-group">
+                <label for="amount">Tutar:</label>
+                <input type="text" id="amount" placeholder="****" name="amount" value="" onkeypress="return (event.charCode !=8 && event.charCode ==0 || ( event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)))" maxlength="4" class="form-control" required><HalkOdePaymentIntegration>
+            </div>
+            <button type="submit" name="process_payment" class="btn btn-primary mt-2">Ödemeyi Test Et</button>
+        }
+
+        @if (ViewBag.Error != null)
+
+        {
+            <p><strong>Hata:</strong> @ViewBag.Error</p>
+        }
+
+    
+
+        @if (ViewBag.ResponseData != null)
+
+        {
+            @if (ViewBag.ResponseData.data != null)
+
+            {
+                
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                    
+                            <th>Taksit Sayısı</th>
+                            <th>Kart Tipi</th>
+                            <th>Kart Programı</th>
+                            <th>Kart Şeması</th>
+                            <th>Girilen Tutar</th>
+                            <th>Toplam Tutar</th>
+                            <th>Para Birimi</th>
+                          @*   <th>currency_id</th> *@
+                            @*  <th>campaign_id</th> *@
+                           @*  <th>title</th>
+                            <th>pos_id</th>
+                            <th>campaign_id</th>
+                            <th>allocation_id</th> *@
+
+                   
+                        
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var details in ViewBag.ResponseData.data)
+                        {
+                            <tr>
+                                <td>@details.installments_number</td>
+                                <td>@details.card_type</td>
+                                <td>@details.card_program</td>
+                                <td>@details.card_scheme</td>
+                                <td>@details.payable_amount</td>
+                                <td>@details.amount_to_be_paid</td>
+                                <td>@details.currency_code</td>
+                              @* <td>@details.currency_id</td> *@
+                                @*<td>@details.campaign_id</td> *@
+                              @* <td>@details.title</td>
+                                <td>@details.pos_id</td>
+                                <td>@details.campaign_id</td>
+                                <td>@details.allocation_id</td> *@
+
+                            
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        }
+        @if (ViewBag.ResponseData != null)
+        {
+            <h4 class="mt-4">Json Response</h4>
+            <pre>@Html.Raw(JsonConvert.SerializeObject(ViewBag.ResponseData, Formatting.Indented))</pre>
+        }
+    </div>
+</body>
+</html>

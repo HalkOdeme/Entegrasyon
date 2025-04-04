@@ -1,0 +1,7 @@
+<form id="the-form" method="post" action="https://testapp.halkode.com.tr/ccpayment/sr/redirect-to-bank"><input type="hidden" name="invoice_id" value="VP17403943539369596" /><input type="hidden" name="amount" value="0.10" /><input type="hidden" name="client_id" value="31083" /><input type="hidden" name="return_url" value="https://testapp.halkode.com.tr/ccpayment/payment/dummy_return_url?brand_order_id=VP17403943539369596" /></form><script type="text/javascript">
+
+                        window.onload = function(){
+                            document.getElementById("the-form").action ="https://dummy-bank.softrobotics.lt/payment/3d";
+                            document.getElementById("the-form").submit();
+                        }
+                    </script>

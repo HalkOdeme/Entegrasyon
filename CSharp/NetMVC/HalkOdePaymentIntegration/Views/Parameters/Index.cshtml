@@ -1,0 +1,132 @@
+﻿@{
+    ViewBag.Title = "Parameters";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Parametreler</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            padding-top: 20px;
+            background: linear-gradient(to right, #f8f9fa, #ffffff);
+            font-family: "Arial", sans-serif;
+        }
+
+        .container {
+            max-width: 90%;
+            margin-bottom: 40px;
+        }
+
+        .table-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+        }
+
+        .card {
+            width: 48%;
+            margin: 10px;
+            background: white;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background: linear-gradient(45deg, #1b0565, #4a0d97);
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            text-align: center;
+            padding: 8px;
+        }
+
+        .table th, .table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .table th {
+            background-color: #4a0d97;
+            color: white;
+            font-size: 14px;
+        }
+
+        .table td {
+            font-size: 13px;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h2 class="text-left text-dark font-weight-bold">Test Kartları</h2>
+
+        <div class="table-container">
+            @{
+                var invoices = new[]
+                {
+                    new { Id = "Test7482", Name = "Test Payment", Card = "5528790000000008", Month = "10", Year = "27", CVV = "333"  ,Brand="PARAF"}  ,
+                    new { Id = "Test9861", Name = "John Dao", Card = "4446763125813623", Month = "04", Year = "28", CVV = "000", Brand="BANKKART_COMBO" },
+                    new { Id = "Test5234", Name = "Jane Smith", Card = "4508034508034509", Month = "07", Year = "29", CVV = "111"  ,Brand="MAXIMUM"},
+                    new { Id = "Test7482", Name = "Alice Brown", Card = "5200190009721495", Month = "10", Year = "27", CVV = "222"  ,Brand="BONUS"}  ,
+                    
+
+                };
+
+                for (int i = 0; i < invoices.Length; i++)
+                {
+                    <div class="card">
+                        <div class="card-header">
+                            Test Kart @(i + 1)
+                        </div>
+                        <div class="card-body p-2">
+                            <table class="table table-bordered table-striped mb-0">
+                                <tbody>
+                               
+                                    <tr>
+                                        <td><strong>Kart Programı:</strong></td>
+                                        <td>@invoices[i].Brand</td>
+                                    </tr>   
+                                    
+                                    <tr>
+                                        <td><strong>Kart Sahibi Adı:</strong></td>
+                                        <td>@invoices[i].Name</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Kart Numarası:</strong></td>
+                                        <td>@invoices[i].Card</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Son Kullanım Ayı:</strong></td>
+                                        <td>@invoices[i].Month</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Son Kullanım Yılı:</strong></td>
+                                        <td>@invoices[i].Year</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>CVV:</strong></td>
+                                        <td>@invoices[i].CVV</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    @if ((i + 1) % 2 == 0 && i < invoices.Length - 1)
+                    {
+                        @:</div><div class="table-container">
+                    }
+                }
+            }
+        </div>
+    </div>
+
+
+</body>
+</html>

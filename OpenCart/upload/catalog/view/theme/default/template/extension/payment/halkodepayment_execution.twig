@@ -1,0 +1,24 @@
+
+{% if halkodeerror %}
+
+    <div class="alert alert-danger">{{ halkodeerror }}</div>
+
+{% else %}
+
+    <section>
+      <form action="{{ form['url'] }}" id="just-send" method="{% if form['method'] == 'GET' %}get{% else %}post{% endif%}">
+          {% for name,value in form['inputs'] %}
+              <input type="{% if debug == 1 %}text{% else %}hidden{% endif %}" name="{{ name }}" value="{{ value|e }}">
+          {% endfor %}
+          {% if debug == 1 %}
+            <input type="submit" name="">
+          {% endif %}
+      </form>
+      {% if debug == 0 %}
+      <script>
+          document.getElementById("just-send").submit();
+      </script>
+      {% endif %}
+  </section>
+
+{% endif %}

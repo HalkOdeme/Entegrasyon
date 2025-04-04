@@ -1,0 +1,202 @@
+﻿@model HalkOdePaymentIntegration.Contract.Request.PaySmart3DRequest
+@using System.Text.Json
+
+@{
+    ViewBag.Title = "3D Ödeme";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+
+<body>
+
+ 
+
+    <div class="container mt-4">
+ 
+        <div class="content-container">
+
+            <div class="form-container">
+                @using (Html.BeginForm("ProcessPayment", "PaySmart3D", FormMethod.Post))
+                {
+                    <h2>3D Ödeme</h2>
+                    <div class="form-group">
+                        <label asp-for="cc_holder_name">Kart Üzerindeki İsim / Soyisim:</label>
+                        <input asp-for="cc_holder_name" class="form-control" id="cc_holder_name"
+                               oninput="updateCardInfo()"
+                               
+                        required />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="cc_no">Kart Numarası:</label>
+                        <input asp-for="cc_no" placeholder="********************" class="form-control" id="cc_no"
+                               maxlength="16"
+                               oninput="updateCardInfo()"
+                               onkeypress="return (event.charCode !=8 && event.charCode ==0 ||
+                           (event.charCode= =46 ||
+                           (event.charCode>= 48 && event.charCode <= 57)))"
+                        onchange="updateInstallments()"
+                        required />
+                    </div>
+
+
+                    <div class="inline-row">
+                        <div class="form-group">
+                            <label asp-for="expiry_month">Son Kullanım Ayı (AA):</label>
+                            <input asp-for="expiry_month" placeholder="**" class="form-control" id="expiry_month"
+                                   maxlength="2"
+                                   oninput="updateCardInfo()"
+                                   onkeypress="return (event.charCode !=8 && event.charCode ==0 ||
+                               (event.charCode= =46 ||
+                               (event.charCode>= 48 && event.charCode <= 57)))"
+                            required />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="expiry_year">Son Kullanım Yılı (YY):</label>
+                            <input asp-for="expiry_year" placeholder="**" class="form-control" id="expiry_year"
+                                   maxlength="2"
+                                   oninput="updateCardInfo()"
+                                   onkeypress="return (event.charCode !=8 && event.charCode ==0 ||
+                               (event.charCode= =46 ||
+                               (event.charCode>= 48 && event.charCode <= 57)))"
+                            required />
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-6">
+                                <label asp-for="cvv">CVV:</label>
+                                <input asp-for="cvv" placeholder="***" class="form-control" id="cvv"
+                                       maxlength="3"
+                                       onfocus="flipCard(true)"
+                                       onblur="flipCard(false)"
+                                       oninput="updateCardInfo()"
+                                       onkeypress="return (event.charCode !=8 && event.charCode ==0 ||
+                                   (event.charCode= =46 ||
+                                   (event.charCode>= 48 && event.charCode <= 57)))"
+                                required />
+                            </div>
+
+                            <div class="form-group col-6">
+                                <label asp-for="total">Tutar:</label>
+                                <input asp-for="total" class="form-control" id="total"
+                                       onkeypress="return (event.charCode !=8 && event.charCode ==0 ||
+                                   (event.charCode= =46 ||
+                                   (event.charCode>= 48 && event.charCode <= 57)))"
+                                onchange="updateInstallments()"
+                                required />
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-6">
+                                <label asp-for="installments_number">Taksit Sayısı:</label>
+                                <select asp-for="installments_number" class="form-control" id="installments_number" required>
+                                    <option value="1">1</option>
+                                </select>
+                            </div>
+                             <div class="form-group col-6">
+                                 <label asp-for="transaction_type">Satış Tipi:</label>
+                                 <select asp-for="transaction_type" class="form-control" id="transaction_type" required>
+                                     <option value="Auth">Satış</option>
+                                     <option value="PreAuth">Önprovizyonlu Satış</option>
+                                 </select>
+                             </div>
+                            <div class="form-group col-6">
+                                <label asp-for="invoice_description">Fatura Açıklaması:</label>
+                                <input asp-for="invoice_description" class="form-control"  required />
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn">Ödemeyi Gönder</button>
+                }
+            </div>
+        </div>
+
+        @if (ViewBag.RequestData != null)
+        {
+            <h3>Request Data</h3>
+            <pre>@Html.Raw(JsonSerializer.Serialize(ViewBag.RequestData))</pre>
+        }
+        @if (ViewBag.ResponseData != null)
+        {
+            <h3>Response Data</h3>
+            <pre>@Html.Raw(JsonSerializer.Serialize(ViewBag.ResponseData))</pre>
+            @Html.Raw(ViewBag.ResponseData)
+        }
+    </div>
+
+    <script>
+        function updateCardInfo() {
+            document.getElementById("card-number").innerText =
+                document.getElementById("cc_no").value || "**** **** **** ****";
+            document.getElementById("card-holder").innerText =
+                document.getElementById("cc_holder_name").value || "Kart Üzerindeki İsim";
+            document.getElementById("card-expiry").innerText =
+                (document.getElementById("expiry_month").value || "AA") + "/" +
+                (document.getElementById("expiry_year").value || "YY");
+            document.getElementById("card-cvv").innerText =
+                document.getElementById("cvv").value || "***";
+        }
+
+        function flipCard(showBack) {
+            const card = document.getElementById("credit-card");
+            if (showBack) {
+                card.classList.add("flipped");
+            } else {
+                card.classList.remove("flipped");
+            }
+        }
+
+        async function updateInstallments() {
+            let cardNumber = document.getElementById("cc_no").value.trim();
+            let totalAmount = document.getElementById("total").value.trim();
+            if (!cardNumber || !totalAmount) {
+                return;
+            }
+
+            let bodyData = {
+                CardNumber: cardNumber,
+                TotalAmount: totalAmount
+            };
+
+            try {
+                let response = await fetch('@Url.Action("GetInstallments", "PaySmart3D")', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(bodyData)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP Hatası: ${response.status} - ${response.statusText}`);
+                }
+
+                let data = await response.json();
+                let select = document.getElementById("installments_number");
+                select.innerHTML = "";
+
+                if (data.error) {
+                    alert(data.error);
+                    select.innerHTML = '<option value="1">1</option>';
+                    return;
+                }
+
+                if (data.status === "success" && Array.isArray(data.data)) {
+                    data.data.forEach(item => {
+                        let option = document.createElement("option");
+                        option.value = item.installments_number;
+                       option.text = `${item.installments_number} Taksit x ${item.title} (${Math.round(item.payable_amount / item.installments_number)} ${item.currency_code})`;
+
+                        select.appendChild(option);
+                    });
+                } else {
+                    select.innerHTML = '<option value="1">1</option>';
+                }
+            } catch (err) {
+                console.error("Taksit güncelleme hatası:", err);
+                alert(`Taksit güncelleme hatası: ${err.message}`);
+                let select = document.getElementById("installments_number");
+                select.innerHTML = '<option value="1">1</option>';
+            }
+        }
+    </script>
+</body>
+</html>

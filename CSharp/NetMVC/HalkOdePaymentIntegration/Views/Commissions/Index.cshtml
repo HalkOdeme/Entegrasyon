@@ -1,0 +1,179 @@
+﻿ ﻿@using Newtonsoft.Json.Linq
+ @using Newtonsoft.Json
+
+
+ @{
+     ViewData["Title"] = "Mevcut Komisyon";
+ }
+
+ <!DOCTYPE html>
+ <html lang="tr">
+ <head>
+     <meta charset="UTF-8">
+     <title>Mevcut Komisyon</title>
+     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+     <style>
+         body {
+         
+         background: linear-gradient(to right, #f8f9fa, #ffffff);
+         font-family: "Arial", sans-serif;
+         }
+
+       
+
+         .card {
+         border-radius: 6px;
+         overflow: hidden;
+         box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.1);
+         background: white;
+         width: 48%;
+         margin: 10px;
+         display: inline-block;
+         vertical-align: top;
+         }
+
+         .card-header {
+         background: linear-gradient(45deg, #1b0565, #4a0d97);
+         color: white;
+         font-size: 1rem;
+         font-weight: bold;
+         text-align: center;
+         padding: 8px;
+         }
+
+         .table th {
+         background-color: #4a0d97;
+         color: white;
+         text-align: center;
+         font-size: 14px;
+         }
+
+         .table td {
+         font-size: 13px;
+         text-align: center;
+         vertical-align: middle;
+         }
+
+         .row {
+         display: flex;
+         flex-wrap: wrap;
+         justify-content: space-between;
+         }
+
+         .form-group input {
+         border: 2px solid #4a0d97;
+         border-radius: 5px;
+         }
+ .btn-custom {
+            background-color: #1b0565;
+            color: white;
+            width: 30%;
+        }
+
+
+
+     </style>
+ </head>
+ <body>
+     <div class="container mt-4">
+         <h2 class="text-left text-dark font-weight-bold">Mevcut Komisyon</h2>
+
+         <!-- Kullanıcı Giriş Formu -->
+         <form method="post" class="mt-4">
+
+         
+            
+             <div class="form-group ">
+                  <label for="currency_code">İşlem Tipi:</label>
+                 <select class="form-control" id="currency_code" name="currency_code" >
+                     <option value="TRY">TRY</option>
+                     <option value="USD">USD</option>
+                     <option value="EUR">EUR</option>
+                     <option value="GBR">GBR</option>
+                 </select>
+             </div>
+             <button type="submit" class="btn btn-custom">Komisyon Oranını Göster</button>
+         </form>
+
+         @if (ViewBag.Error != null)
+         {
+             <div class="alert alert-danger mt-3"><strong>Hata:</strong> @ViewBag.Error</div>
+         }
+
+         @if (ViewBag.ResponseData != null)
+         {
+             var responseJson = JsonConvert.SerializeObject(ViewBag.ResponseData);
+             var data = JObject.Parse(responseJson)["data"];
+
+             var groupedByCardProgram = new Dictionary<string, List<JToken>>();
+
+             foreach (var installmentGroup in data)
+             {
+                 foreach (var item in installmentGroup.First)
+                 {
+                     string cardProgram = item["card_program"].ToString();
+                     if (!groupedByCardProgram.ContainsKey(cardProgram))
+                         groupedByCardProgram[cardProgram] = new List<JToken>();
+
+                     groupedByCardProgram[cardProgram].Add(item);
+                 }
+             }
+
+             var groups = groupedByCardProgram.ToList();
+
+             <h3 class="mt-4 text-dark">Kart Programlarına Göre Komisyonlar</h3>
+
+             <div class="row">
+                 @for (int i = 0; i < groups.Count; i++)
+                 {
+                     <div class="card">
+                         <div class="card-header">
+                             @groups[i].Key Kart Programı
+                         </div>
+                         <div class="card-body p-2">
+                             <table class="table table-bordered table-striped mb-0">
+                                 <thead>
+                                     <tr>
+                                         <th>Taksit</th>
+                                         <th>Komisyon Oranı</th>
+                                         <th>Para Birimi</th>
+
+                                     </tr>
+                                 </thead>
+                                 <tbody>
+                                     @foreach (var item in groups[i].Value.OrderBy(x => (int?)x["installment"]))
+                                     {
+                                         <tr>
+                                             <td>@item["installment"]</td>
+                                             <td>@item["merchant_commission_percentage"]</td>
+                                             <td>@item["currency_code"]</td>
+
+                                         </tr>
+                                     }
+                                 </tbody>
+                             </table>
+                         </div>
+                     </div>
+
+                     @if ((i + 1) % 2 == 0 && (i + 1) < groups.Count)
+                     {
+                         @:</div><div class="row">
+                     }
+
+                 }
+             </div>
+
+         }
+       
+        
+          @if (ViewBag.ResponseData != null)
+         {
+             <h4 class="mt-4">Json Response</h4>
+             <pre>@Html.Raw(JsonConvert.SerializeObject(ViewBag.ResponseData, Formatting.Indented))</pre>
+         }
+     </div>
+
+     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/js/bootstrap.bundle.min.js"></script>
+ </body>
+ </html>

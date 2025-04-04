@@ -1,0 +1,58 @@
+﻿@using Newtonsoft.Json
+@model HalkOdePaymentIntegration.Contract.Request.CompleteRequest
+
+
+@{
+    ViewData["Title"] = "Tamamlama";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+
+<body>
+
+
+    <div class="container mt-4">
+        <h2>Tamamlama</h2>
+
+        @using (Html.BeginForm("ProcessPayment", "Complete", FormMethod.Post))
+
+        {
+            <div class="form-group">
+                <div class="form-group">
+                    <label for="invoice_id">Fatura Numarası:</label>
+                    <input type="text" id="invoice_id" name="invoice_id" value="" class="form-control" required>
+                </div>
+                <label for="order_id">İşlem Numarası:</label>
+                <input type="text" id="order_id" name="order_id" value=""  class="form-control" required>
+            </div>
+         
+            <button type="submit" name="process_payment" class="btn btn-primary mt-2">Ödemeyi Test Et</button>
+        }
+    </div>
+
+    @if (ViewBag.Error != null)
+
+    {
+        <p><strong>Hata:</strong> @ViewBag.Error</p>
+    }
+
+    @if (ViewBag.RequestData != null)
+
+    {
+        <h3>Gönderilen Veriler</h3>
+        <pre>@Html.Raw(JsonConvert.SerializeObject(ViewBag.RequestData, Formatting.Indented))</pre>
+    }
+
+    @if (ViewBag.ResponseData != null)
+
+    {
+        <h3>Gönderilen Veriler</h3>
+        <pre>@Html.Raw(JsonConvert.SerializeObject(ViewBag.ResponseData, Formatting.Indented))</pre>
+
+    }
+
+
+
+</body>
+</html>

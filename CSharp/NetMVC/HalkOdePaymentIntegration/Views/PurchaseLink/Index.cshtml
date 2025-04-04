@@ -1,0 +1,79 @@
+﻿@using System.Text.Json
+
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Link ile Ödeme Entegrasyonu</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        
+        .btn-custom {
+            background-color: #1b0565;
+            color: white;
+            width: 30%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container mt-4">
+        <h2>Link ile Ödeme Entegrasyonu</h2>
+
+        @using (Html.BeginForm("ProcessPayment", "PurchaseLink", FormMethod.Post))
+        {
+            <div class="form-row">
+                <div class="form-group col-md-6 mt-2">
+                    <label for="name">Kart Sahibi Adı:</label>
+                    <input type="text" id="name" name="name" class="form-control" required
+                           onkeypress='return ((event.charCode >= 65 && event.charCode <= 90) ||
+                (event.charCode >= 97 && event.charCode <= 122) ||
+                (event.charCode == 32))' />
+                </div>
+                <div class="form-group col-md-6 mt-2">
+                    <label for="surname">Kart Sahibi Soyadı:</label>
+                    <input type="text" id="surname" name="surname" class="form-control" required
+                           onkeydown="return /[a-z]/i.test(event.key)" />
+                </div>
+                <div class="form-group col-md-6 mt-2">
+                    <label for="total">Tutar:</label>
+                    <input type="text" id="total" name="total" class="form-control" required
+                           onkeypress="return (event.charCode != 8 && event.charCode == 0 ||
+                       (event.charCode= =46 ||
+                       (event.charCode>= 48 && event.charCode <= 57)))" />
+                </div>
+            </div>
+            <button type="submit" class="btn btn-custom">Ödemeyi Test Et</button>
+        }
+
+        @if (ViewBag.RequestData != null)
+        {
+            <h3 class="mt-4">Request Data</h3>
+            <pre>@Html.Raw(JsonSerializer.Serialize(ViewBag.RequestData, new JsonSerializerOptions { WriteIndented = true }))</pre>
+        }
+
+        @if (ViewBag.ResponseData != null)
+        {
+            var responseJson = JsonSerializer.Serialize(ViewBag.ResponseData);
+            var responseData = JsonSerializer.Deserialize<Dictionary<string, object>>(responseJson);
+
+            <h3 class="mt-4">Response Data</h3>
+            <pre>@Html.Raw(JsonSerializer.Serialize(ViewBag.ResponseData, new JsonSerializerOptions { WriteIndented = true }))</pre>
+
+            if (responseData.ContainsKey("link"))
+            {
+                string paymentLink = responseData["link"].ToString();
+                <div class="link-container">
+                    <strong>Ödeme Linkiniz:</strong><br>
+                    <a href="@paymentLink" target="_blank" class="btn btn-custom">Ödeme Sayfasına Git</a>
+                </div>
+            }
+        }
+    </div>
+
+</body>
+
+</html>

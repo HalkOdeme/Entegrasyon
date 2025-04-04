@@ -1,0 +1,82 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="form.SiteMaster" %>
+
+<!DOCTYPE html>
+<html lang="tr">
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%: Page.Title %> - Halk Elektronik Para ve Ödeme Hizmetleri A.Ş.</title>
+
+    <webopt:bundlereference runat="server" path="~/Content/css" />
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+
+    <style>
+        /* Sayfa tasarım ayarları */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .body-content {
+            flex: 1;
+        }
+
+        /* Header (Mavi Menü) */
+        .navbar {
+            background-color: #180554 !important; /* Mavi renk */
+        }
+        .navbar .nav-link {
+            color: white !important;
+        }
+        .navbar .navbar-brand {
+            font-weight: bold;
+            color: white !important;
+        }
+
+        /* Footer (Sabit) */
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #180554; /* Mavi */
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <form runat="server">
+        <!-- HEADER (ÜST MENÜ) -->
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container">
+                <a class="navbar-brand" runat="server" href="~/">HalkOde</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="PaySmart2D.aspx">2D Ödeme</a></li>
+                        <li class="nav-item"><a class="nav-link" href="PaySmart3D.aspx">3D Ödeme</a></li>
+                        <li class="nav-item"><a class="nav-link" href="GetPos.aspx">Taksit Gösterme</a></li> 
+                        <li class="nav-item"><a class="nav-link" href="purchaselink.aspx">Link İle Ödeme</a></li>
+                        <li class="nav-item"><a class="nav-link" href="CheckStatus.aspx">Ödeme Sorgulama</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- SAYFA İÇERİĞİ -->
+        <div class="container body-content">
+            <asp:ContentPlaceHolder ID="MainContent" runat="server"></asp:ContentPlaceHolder>
+        </div>
+
+        <!-- FOOTER (SABİT ALT MENÜ) -->
+        <footer>
+            <p>&copy; <%: DateTime.Now.Year %> - Halk Elektronik Para ve Ödeme Hizmetleri A.Ş.</p>
+        </footer>
+    </form>
+</body>
+</html>

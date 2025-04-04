@@ -1,0 +1,111 @@
+﻿@using Newtonsoft.Json
+
+@{
+    ViewBag.Title = "Taksit Sorgulama Entegrasyonu";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background: linear-gradient(to right, #f8f9fa, #ffffff);
+            font-family: "Arial", sans-serif;
+        }
+
+      
+
+
+        .btn-custom {
+            background-color: #1b0565;
+            color: white;
+            width: 30%;
+        }
+
+        .table th {
+            background: #17456d;
+            color: white;
+            text-align: center;
+        }
+
+        .response-box {
+            background: #f8f9fa;
+            border-left: 4px solid #17456d;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            overflow-x: auto;
+            word-break: break-word;
+        }
+
+     /*    .response-success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+
+        .response-error {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        } */
+
+        .response-info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container mt-4">
+        <h2>Taksit Sorgulama Entegrasyonu</h2>
+
+        @using (Html.BeginForm("ProcessPayment", "Taksit", FormMethod.Post))
+        {
+            <button type="submit" class="btn btn-custom mt-3">Ödemeyi Gönder</button>
+        }
+
+        @if (ViewBag.RequestData != null)
+        {
+            var responseJson = JsonConvert.SerializeObject(ViewBag.RequestData, Formatting.Indented);
+            var isSuccess = responseJson.Contains("\"status_code\": 100");
+
+            <div class="response-box @(isSuccess ? "response-success" : "response-error")">
+                <strong>Gönderilen Request</strong>
+                <pre>@Html.Raw(responseJson)</pre>
+            </div>
+
+            @if (ViewBag.ResponseData.installments != null)
+            {
+                <h4 class="mt-4">Taksit Seçenekleri</h4>
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Taksit Sayısı</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var installment in ViewBag.ResponseData.installments)
+                        {
+                            <tr>
+                                <td class="text-center">@installment</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+
+            @if (ViewBag.ResponseData != null)
+            {
+                <h4 class="mt-4">Json Response</h4>
+                <pre>@Html.Raw(JsonConvert.SerializeObject(ViewBag.ResponseData, Formatting.Indented))</pre>
+            }
+        }
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,103 @@
+﻿@model HalkOdePaymentIntegration.Contract.Request.CheckStatusRequest
+@using System.Text.Json
+
+@{
+    ViewBag.Title = "Ödeme Sorgulama Entegrasyonu";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Ödeme Sorgulama Entegrasyonu</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background: linear-gradient(to right, #f8f9fa, #ffffff);
+            font-family: "Arial", sans-serif;
+        }
+
+        
+
+        .form-group label {
+            font-weight: bold;
+            color: #17456d;
+        }
+
+
+        .response-success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+
+        .response-error {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+
+        .form-control {
+            border-radius: 6px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+
+        .btn-custom {
+            background-color: #1b0565;
+            color: white;
+            width: 30%;
+        }
+
+
+        pre {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-left: 4px solid #17456d;
+            overflow-x: auto;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container mt-4">
+        <h2>Ödeme Sorgulama</h2>
+        
+
+        @using (Html.BeginForm("ProcessPayment", "CheckStatus", FormMethod.Post))
+        {
+            <div class="form-group mt-4">
+                <label for="invoice_id">Fatura Numarası:</label>
+                <input type="text" class="form-control" id="invoice_id" name="invoice_id" required>
+            </div>
+
+            <button type="submit" class="btn btn-custom">Ödemeyi Sorgula</button>
+        }
+
+
+        @if (ViewBag.RequestData != null)
+
+        {
+            <div class="response-box response-info">
+                <strong>📤 Gönderilen Veri</strong>
+                <pre>@Html.Raw(JsonSerializer.Serialize(ViewBag.RequestData, new JsonSerializerOptions { WriteIndented = true }))</pre>
+            </div>
+        }
+
+        @if (ViewBag.ResponseData != null)
+
+        {
+
+            var responseJson = JsonSerializer.Serialize(ViewBag.ResponseData, new JsonSerializerOptions { WriteIndented = true });
+
+            var isSuccess = responseJson.Contains("\"status_code\": 100");
+
+            <div class="response-box @(isSuccess ? "response-success" : "response-error")">
+                <strong>📥 Yanıt Verisi</strong>
+                <pre>@Html.Raw(responseJson)</pre>
+            </div>
+        }
+    </div>
+
+
+</body>
+</html>
