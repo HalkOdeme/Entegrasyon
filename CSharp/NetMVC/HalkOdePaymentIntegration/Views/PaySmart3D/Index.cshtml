@@ -183,7 +183,7 @@
                     data.data.forEach(item => {
                         let option = document.createElement("option");
                         option.value = item.installments_number;
-                       option.text = `${item.installments_number} Taksit x ${item.title} (${Math.round(item.payable_amount / item.installments_number)} ${item.currency_code})`;
+                     option.text = `${item.installments_number} Taksit x ${item.title} (${(item.payable_amount / item.installments_number).toFixed(2)} ${item.currency_code})`;
 
                         select.appendChild(option);
                     });

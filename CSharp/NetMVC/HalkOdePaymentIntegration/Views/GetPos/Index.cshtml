@@ -52,7 +52,7 @@
                             <th>Kart Tipi</th>
                             <th>Kart Programı</th>
                             <th>Kart Şeması</th>
-                            <th>Girilen Tutar</th>
+                            <th>Taksit Tutarı</th>
                             <th>Toplam Tutar</th>
                             <th>Para Birimi</th>
                           @*   <th>currency_id</th> *@
@@ -74,7 +74,9 @@
                                 <td>@details.card_type</td>
                                 <td>@details.card_program</td>
                                 <td>@details.card_scheme</td>
-                                <td>@details.payable_amount</td>
+                                <td>
+                                    @(details.payable_amount / details.installments_number)
+                                </td>
                                 <td>@details.amount_to_be_paid</td>
                                 <td>@details.currency_code</td>
                               @* <td>@details.currency_id</td> *@

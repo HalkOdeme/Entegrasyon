@@ -1,4 +1,5 @@
-﻿using HalkOdePaymentIntegration.Contract.Request;
+﻿
+using HalkOdePaymentIntegration.Contract.Request;
 using HalkOdePaymentIntegration.Contract.Response;
 using HalkOdePaymentIntegration.Generate;
 using HalkOdePaymentIntegration.Settings;
@@ -27,18 +28,13 @@ namespace HalkOdePaymentIntegration.Controllers
             return View();
         }
 
-        
 
-          
+
+
         [HttpPost]
-        public async Task<IActionResult> ProcessPayment(string credit_card, double amount, string currency_code, string logo)
+        public async Task<IActionResult> ProcessPayment(string credit_card, string amount, string currency_code, string logo)
         {
-            if (amount <= 0)
-            {
-                ModelState.AddModelError("amount", "The amount must be greater than 0.");
-                return View("Index");
-            }
-
+        
             var getPosRequest = CreateRequestParameter(_apiSettings, credit_card, currency_code, amount, logo);
             var response = await GetAsync(getPosRequest);
 
@@ -70,7 +66,7 @@ namespace HalkOdePaymentIntegration.Controllers
         }
 
 
-        private GetPosRequest CreateRequestParameter(ApiSettings apiSettings, string credit_card, string currency_code, double amount, string logo)
+        private GetPosRequest CreateRequestParameter(ApiSettings apiSettings, string credit_card, string currency_code, string amount, string logo)
         {
             return new GetPosRequest
             {
@@ -78,7 +74,7 @@ namespace HalkOdePaymentIntegration.Controllers
                 currency_code = "TRY",
                 amount = amount,
                 merchant_key = apiSettings.MerchantKey,
-                
+
             };
         }
     }

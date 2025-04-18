@@ -20,10 +20,9 @@ namespace HalkOdePaymentIntegration.Settings
                 var base_address = "https://testapp.halkode.com.tr/ccpayment/";
                 var tokenUrls = "https://testapp.halkode.com.tr/ccpayment/api/token";
 
-
-                var merchant_key = "$2y$10$12Cg9.DfqlXZQpRbUbE.zuORaObIk4KV7HKs4PcOPTIh0WrEa47l.";//Üye İş Yeri Anahtarı
-                var app_id = "b60de384d5417951b06910fa9cbe8d86"; // UYGULAMA ANAHTARI
-                var app_secret = "1581073b57269feab48569b1d21b079f"; // UYGULAMA PAROLASI
+                var merchant_key = "$2y$10$avMpLZvIIEY4brcULaj4u.can9eg3gAnx5s3JGz5Yxd.9zka8YfaO";//Üye İş Yeri Anahtarı --Ödeme Test Üye İşyeri
+                var app_id = "de948c3eafdf5582409d0ad9a0809666"; // UYGULAMA ANAHTARI
+                var app_secret = "b15fba89a18997ab32e36d0b490f9aff"; // UYGULAMA PAROLASI
 
 
                 if (string.IsNullOrWhiteSpace(app_id))

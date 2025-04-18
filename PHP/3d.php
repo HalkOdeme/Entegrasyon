@@ -10,12 +10,22 @@
 </head>
 
 <body>
+
     <?php include 'nav.php'; ?>
+
+    <?php
+    include 'db.php';
+    $query = $pdo->query("SELECT total FROM tutar ORDER BY id DESC LIMIT 1");
+    $result = $query->fetch(PDO::FETCH_ASSOC);
+    $total = $result ? $result['total'] : 2000;
+    ?>
+
     <div class="container mt-4">
+
         <h2>3D Ödeme İşlemi</h2>
 
         <form method="post">
-            <?php 
+            <?php
             $invoice_id = date('Ymd') . '-' . rand(1000, 9999);
             ?>
             <div class="form-group">
@@ -57,7 +67,7 @@
                     <label for="total">Tutar:</label>
                     <input type="text"
                         onkeypress="return (event.charCode !=8 && event.charCode ==0 || ( event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)))"
-                        class="form-control" id="total" name="total" required oninput="updateInstallments()">
+                        class="form-control" id="total" name="total" required oninput="updateInstallments()" value="<?= $total ?>">
                 </div>
 
                 <div class="form-group col-md-6">
@@ -89,11 +99,9 @@
             $app_id = "f77c7d06a417638ccde51c35fd6f6c17";
             $appSecret = "30296568e1d7941de4fd684dbc7203e4";
             $merchantKey = '$2y$10$XUmbnOQ0nmHsZy8WxIno4euYobTVUzxqtU1h..x32zyfG6qw7OYrq';
-            $total = $_POST['total'];
+
             $installments_number = $_POST['installments_number'];
             $currencyCode = 'TRY';
-            $total = $_POST['total'];
-            $invoice_id = $_POST['invoice_id']; // Fatura ID'si otomatik oluşturuldu
 
             $data = array(
                 "cc_holder_name" => $_POST['cc_holder_name'],
@@ -102,7 +110,7 @@
                 "expiry_year" => $_POST['expiry_year'],
                 "cvv" => $_POST['cvv'],
                 "currency_code" => $currencyCode,
-                "installments_number" => $installments_number, // Kullanıcının seçtiği taksit sayısını API'ye ilet
+                "installments_number" => $installments_number, 
                 "invoice_id" => $invoice_id,
                 "invoice_description" => "ewrwer",
                 "total" => $total,
@@ -163,44 +171,46 @@
 
 
     <script>
-    function updateInstallments() {
-    const ccNo = document.getElementById('cc_no').value;
-    const total = document.getElementById('total').value;
+        function updateInstallments() {
+            const ccNo = document.getElementById('cc_no').value;
+            const total = document.getElementById('total').value;
 
-    if (ccNo.length === 16 && total.length > 0) {
-        fetch('get_installment3d.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ cc_no: ccNo, total: total })
-        })
-        .then(response => response.json())
-        .then(data => {
-            const installmentsSelect = document.getElementById('installments_number');
-            installmentsSelect.innerHTML = '<option value="1">Tek Çekim</option>';
+            if (ccNo.length === 16 && total.length > 0) {
+                fetch('get_installment3d.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            cc_no: ccNo,
+                            total: total
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        const installmentsSelect = document.getElementById('installments_number');
+                        installmentsSelect.innerHTML = '<option value="1">Tek Çekim</option>';
 
-            if (data.installments && Array.isArray(data.installments)) {
-                data.installments.forEach(installment => {
-                    const option = document.createElement('option');
-                    option.value = installment.installment_number;
-                    option.text = `${installment.installment_number} Taksit - ${installment.amount} ${installment.currency}`;
-                    installmentsSelect.appendChild(option);
-                });
-            } else {
-                console.error('Hata: Taksit bilgisi alınamadı.', data);
-                alert('Taksit bilgisi alınamadı. Lütfen bilgilerinizi kontrol edin.');
+                        if (data.installments && Array.isArray(data.installments)) {
+                            data.installments.forEach(installment => {
+                                const option = document.createElement('option');
+                                option.value = installment.installment_number;
+                                option.text = `${installment.installment_number} Taksit - ${installment.amount} ${installment.currency}`;
+                                installmentsSelect.appendChild(option);
+                            });
+                        } else {
+                            console.error('Hata: Taksit bilgisi alınamadı.', data);
+                            alert('Taksit bilgisi alınamadı. Lütfen bilgilerinizi kontrol edin.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Hata:', error);
+                        alert('Bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+                    });
             }
-        })
-        .catch(error => {
-            console.error('Hata:', error);
-            alert('Bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
-        });
-    }
-}
+        }
     </script>
 
 </body>
 
 </html>
-

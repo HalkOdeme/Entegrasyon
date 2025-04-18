@@ -31,4 +31,4 @@ Bu repository'ye aşağıdaki GitHub adresinden ulaşabilirsiniz:
 
 ## İletişim ve Destek
 
-Entegrasyon süreçleriyle ilgili herhangi bir sorunuz veya yardıma ihtiyacınız olursa, lütfen bizimle iletişime geçmekten çekinmeyin.
+Entegrasyon süreçleriyle ilgili herhangi bir sorunuz veya yardıma ihtiyacınız olursa, sanalposdestek@halkode.com.tr adresinden bizimle iletişime geçebilirsiniz.

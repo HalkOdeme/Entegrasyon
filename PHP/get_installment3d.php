@@ -5,10 +5,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $ccNo = $data['cc_no'];
     $total = $data['total'];
 
-    $baseUrl = "https://testapp.halkode.com.tr/ccpayment/api/getpos";
-    $app_id = "006f074e818c52970b4212a4767181f3";
-    $appSecret = "ff486ce745834e39ed38908cdd7ceaaf";
-    $merchantKey = '$2y$10$tA5Q5IJJv8zpSh0sM.6bueB53HG2VmEKdWnj.HGewu9y5VUk7qvee';
+    $baseUrl = "https://app.halkode.com.tr/ccpayment/api/getpos";
+    $app_id = "9dec507baa65693d48ee1a05ed3a9874";
+    $appSecret = "5de919beac9ad52dc9d61074ac887fac";
+    $merchantKey = '$2y$10$A203i25Rl6xeqdf2n0LfUOnkI3.FudEg9ODMp1bJYyWQYgQOhQBIi';
     $currencyCode = "TRY";
 
     // Token isteği
@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 function getToken($app_id, $app_secret)
 {
-    $baseUrl = "https://testapp.halkode.com.tr/ccpayment/api/token";
+    $baseUrl = "https://app.halkode.com.tr/ccpayment/api/token";
     $data = array('app_id' => $app_id, 'app_secret' => $app_secret);
     $jsonData = json_encode($data);
     $ch = curl_init($baseUrl);

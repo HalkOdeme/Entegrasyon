@@ -61,6 +61,7 @@
                         class="form-control" id="total" name="total" required oninput="updateInstallments()">
                 </div>
 
+                
                 <div class="form-group col-md-6">
                     <label for="installments_number">Taksit Sayısını Seçiniz:</label>
                     <select class="form-control" id="installments_number" name="installments_number" required>
@@ -90,6 +91,10 @@
             $app_id = "f77c7d06a417638ccde51c35fd6f6c17";
             $appSecret = "30296568e1d7941de4fd684dbc7203e4";
             $merchantKey = '$2y$10$XUmbnOQ0nmHsZy8WxIno4euYobTVUzxqtU1h..x32zyfG6qw7OYrq';
+
+
+
+
             $total = $_POST['total'];
             $installments_number = $_POST['installments_number'];
             $currencyCode = "TRY";
