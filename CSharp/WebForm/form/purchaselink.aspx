@@ -1,5 +1,5 @@
 ﻿
-<%@ Page Title="HalkOde" Language="C#" MasterPageFile="~/Site.Master" Async="true" AutoEventWireup="true" CodeBehind="purchaselink.aspx.cs" Inherits="form.purchaselink" EnableEventValidation="false" %>
+<%@ Page Title="HalkOde" Language="C#" MasterPageFile="~/Site.Master" Async="true" AutoEventWireup="true" CodeBehind="Purchaselink.aspx.cs" Inherits="form.Purchaselink" EnableEventValidation="false" %>
 
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">

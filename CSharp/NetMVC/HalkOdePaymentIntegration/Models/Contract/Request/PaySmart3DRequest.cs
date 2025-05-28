@@ -23,6 +23,8 @@ namespace HalkOdePaymentIntegration.Contract.Request
         public string cvv { get; set; } // optional
         public string merchant_key { get; set; }
         public string hash_key { get; set; }
+        public string is_commission_from_user { get; set; }
+        public string commission_by { get; set; }
     }
 
 

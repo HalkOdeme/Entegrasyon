@@ -10,13 +10,13 @@ using System.Text.Json;
 
 namespace HalkOdePaymentIntegration.Controllers
 {
-    public class PaySmart3DController : Controller
+    public class PaySmart3DControllerCommission : Controller
     {
         private const string URL = "api/paySmart3D";
         private readonly HttpClient _httpClient;
         private readonly ApiSettings _apiSettings;
 
-        public PaySmart3DController()
+        public PaySmart3DControllerCommission()
         {
             _httpClient = new HttpClient();
             _apiSettings = new ApiSettingConfiguration().Configuration();
@@ -27,8 +27,8 @@ namespace HalkOdePaymentIntegration.Controllers
             return View();
         }
 
-        [HttpPost("GetInstallments")]
-        public async Task<JsonResult> GetInstallments([FromBody] InstallmentRequests request)
+        [HttpPost("GetInstallmentsss")]
+        public async Task<JsonResult> GetInstallmentsss([FromBody] InstallmentRequestsss request)
         {
             try
             {
@@ -67,7 +67,51 @@ namespace HalkOdePaymentIntegration.Controllers
             catch (Exception ex)
             {
                 // Hata loglama
-                Console.WriteLine($"GetInstallments metodu sırasında hata oluştu: {ex.Message}");
+                Console.WriteLine($"GetInstallmentsss metodu sırasında hata oluştu: {ex.Message}");
+                return Json(new { error = $"Sunucu hatası: {ex.Message}" });
+            }
+        }
+
+
+        [HttpPost("GetComission")]
+        public async Task<JsonResult> GetComission([FromBody] InstallmentRequestsss request)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(request.CardNumber) || string.IsNullOrWhiteSpace(request.TotalAmount))
+                {
+                    return Json(new { error = "Kart numarası veya tutar bilgisi boş olamaz." });
+                }
+
+                if (!decimal.TryParse(request.TotalAmount, out decimal totalValue) || totalValue <= 0)
+                {
+                    return Json(new { error = "Geçerli bir tutar giriniz." });
+                }
+
+                var token = await GetTokenAsync();
+                if (string.IsNullOrEmpty(token))
+                {
+                    return Json(new { error = "Token alınamadı." });
+                }
+
+                var requestData = new
+                {
+                    currency_code = "TRY",
+                    
+                };
+
+                var responseContent = await PostAsync($"{_apiSettings.BaseAddress}api/commissions", requestData, token);
+                if (responseContent == null)
+                {
+                    return Json(new { error = "API'den yanıt alınamadı." });
+                }
+
+                return ParseInstallmentsResponse(responseContent);
+            }
+            catch (Exception ex)
+            {
+                // Hata loglama
+                Console.WriteLine($"GetComission metodu sırasında hata oluştu: {ex.Message}");
                 return Json(new { error = $"Sunucu hatası: {ex.Message}" });
             }
         }
@@ -82,6 +126,8 @@ namespace HalkOdePaymentIntegration.Controllers
             string cvv,
             int installments_number,
             string invoice_description,
+            string commission_by,
+            string is_commission_from_user,
             string payment_completed_by,
             double total,
             string transaction_type)
@@ -101,6 +147,8 @@ namespace HalkOdePaymentIntegration.Controllers
                 total,
                 transaction_type,
                 payment_completed_by,
+                commission_by,
+                is_commission_from_user,
                 return_url,
                 cancel_url);
 
@@ -225,6 +273,8 @@ namespace HalkOdePaymentIntegration.Controllers
             double total,
             string transaction_type,
             string payment_completed_by,
+            string is_commission_from_user,
+            string commission_by,
             string return_url,
             string cancel_url)
         {
@@ -257,7 +307,8 @@ namespace HalkOdePaymentIntegration.Controllers
                 cvv = cvv,
                 merchant_key = apiSettings.MerchantKey,
                 transaction_type = transaction_type,
-
+                commission_by = "user",  //Komisyon'u Üye işyeri karşılayacaksa "merchant", son kullanıcı karşılayacaksa "user" gönderilmelidir. 
+                is_commission_from_user ="1",
             };
 
             var hashGenerator = new HashGenerator();
@@ -272,8 +323,8 @@ namespace HalkOdePaymentIntegration.Controllers
             return paySmart3DRequest;
         }
     }
-
-    public class InstallmentRequests
+    
+    public class InstallmentRequestsss
     {
         public string CardNumber { get; set; }
         public string TotalAmount { get; set; }

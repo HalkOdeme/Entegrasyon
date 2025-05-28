@@ -20,6 +20,10 @@
         .body-content {
             flex: 1;
         }
+         .navbar-custom {
+            
+            height: 70px;
+        }
 
         /* Header (Mavi Menü) */
         .navbar {
@@ -48,9 +52,12 @@
 <body>
     <form runat="server">
         <!-- HEADER (ÜST MENÜ) -->
-        <nav class="navbar navbar-expand-lg navbar-dark">
+       <nav class='navbar navbar-expand-lg navbar-light navbar-custom'>
             <div class="container">
-                <a class="navbar-brand" runat="server" href="~/">HalkOde</a>
+                <a class="navbar-brand" runat="server" href="~/">
+                     <img src="HALKODE_LOGO-02.png" alt="Platform Ödeme" style="height: 120px;  margin-left:100px"> 
+                </a>
+                      
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                         aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -61,8 +68,9 @@
                         <li class="nav-item"><a class="nav-link" href="PaySmart2D.aspx">2D Ödeme</a></li>
                         <li class="nav-item"><a class="nav-link" href="PaySmart3D.aspx">3D Ödeme</a></li>
                         <li class="nav-item"><a class="nav-link" href="GetPos.aspx">Taksit Gösterme</a></li> 
-                        <li class="nav-item"><a class="nav-link" href="purchaselink.aspx">Link İle Ödeme</a></li>
+                        <li class="nav-item"><a class="nav-link" href="Purchaselink.aspx">Link İle Ödeme</a></li>
                         <li class="nav-item"><a class="nav-link" href="CheckStatus.aspx">Ödeme Sorgulama</a></li>
+                         <li class="nav-item"><a class="nav-link" href="Parameters.aspx">Parametreler</a></li>
                     </ul>
                 </div>
             </div>

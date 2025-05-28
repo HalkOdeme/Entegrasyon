@@ -29,12 +29,12 @@
                 <div class="form-group col-md-6 mt-2">
                     <label for="name">Kart Sahibi Adı:</label>
                     <input type="text"
-                        onkeypress='return ((event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || (event.charCode == 32))'
+                       
                         id="name" name="name" class="form-control" required />
                 </div>
                 <div class="form-group col-md-6 mt-2">
                     <label for="surname">Kart Sahibi Soyadı:</label>
-                    <input type="text" onkeydown="return /[a-z]/i.test(event.key)" id="surname" name="surname"
+                    <input type="text"  id="surname" name="surname"
                         class="form-control" required />
                 </div>
 

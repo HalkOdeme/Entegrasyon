@@ -19,6 +19,7 @@
                         <div class='dropdown-menu' aria-labelledby='navbarDropdown'>
                             <a class='dropdown-item' href='2d.php'>2D Entegrasyonu</a>
                             <a class='dropdown-item' href='3d.php'>3D Entegrasyonu</a>
+                            <a class='dropdown-item' href='3dcommision.php'>3D Entegrasyon Komisyon Yansıtma</a>
                             <a class='dropdown-item' href='purchaselink.php'>Link ile Ödeme Entegrasyonu</a>
                             <a class='dropdown-item' href='refund.php'>İade Entegrasyonu</a><!-- refund -->
                             <a class='dropdown-item' href='checkstatus.php'>Ödeme Sorgulama</a> <!-- checkstatus -->

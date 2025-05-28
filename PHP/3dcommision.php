@@ -22,7 +22,7 @@
 
     <div class="container mt-4">
 
-        <h2>3D Ödeme İşlemleri</h2>
+        <h2>3D Komisyonlu Ödeme İşlemleri</h2>
 
         <form method="post">
             <?php
@@ -30,11 +30,13 @@
             ?>
             <div class="form-group">
                 <label for="invoice_id" class="mt-2">Fatura Numarası:</label>
-                <input type="text" class="form-control" id="invoice_id" name="invoice_id" value="<?php echo $invoice_id; ?>" readonly>
+                <input type="text" class="form-control" id="invoice_id" name="invoice_id"
+                    value="<?php echo $invoice_id; ?>" readonly>
             </div>
             <div class="form-group">
                 <label for="cc_holder_name">Kart Üzerindeki İsim / Soyisim:</label>
                 <input type="text" class="form-control"
+                   
                     id="cc_holder_name" name="cc_holder_name" required>
             </div>
             <div class="form-group">
@@ -66,7 +68,8 @@
                     <label for="total">Tutar:</label>
                     <input type="text"
                         onkeypress="return (event.charCode !=8 && event.charCode ==0 || ( event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)))"
-                        class="form-control" id="total" name="total" required oninput="updateInstallments()" value="<?= $total ?>">
+                        class="form-control" id="total" name="total" required oninput="updateInstallments()"
+                        value="<?= $total ?>">
                 </div>
 
                 <div class="form-group col-md-6">
@@ -107,7 +110,7 @@
                 "expiry_year" => $_POST['expiry_year'],
                 "cvv" => $_POST['cvv'],
                 "currency_code" => $currencyCode,
-                "installments_number" => $installments_number, 
+                "installments_number" => $installments_number,
                 "invoice_id" => $invoice_id,
                 "invoice_description" => "ewrwer",
                 "total" => $total,
@@ -127,7 +130,9 @@
                 "hash_key" => generateHashKey($total, $installments_number, $currencyCode, $merchantKey, $invoice_id, $appSecret),
                 "return_url" => "http://localhost/PHP/succes.php",
                 "cancel_url" => "http://localhost/PHP/fail.php",
-                "transaction_type" => $_POST['transaction_type']
+                "transaction_type" => $_POST['transaction_type'],
+                "commission_by" => "merchant",
+                "is_commission_from_user" => "1"
             );
 
             $ch = curl_init($baseUrl);
@@ -135,7 +140,7 @@
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data)); // API'ye JSON formatında gönder
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']); // JSON header ekle
-
+        
             $response = curl_exec($ch);
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE); // HTTP kodu al
             $error = curl_error($ch);
@@ -167,15 +172,15 @@
     <?php include 'footer.php'; ?>
 
 
-  <script>
-    function updateInstallments() {
-        const ccNo = document.getElementById('cc_no').value;
-        const totalInput = document.getElementById('total');
-        const total = totalInput.value;
-        const currency = 'TL'; // Varsayılan para birimi
+    <script>
+        function updateInstallments() {
+            const ccNo = document.getElementById('cc_no').value;
+            const totalInput = document.getElementById('total');
+            const total = totalInput.value;
+            const currency = 'TL'; // Varsayılan para birimi
 
-        if (ccNo.length === 16 && total.length > 0) {
-            fetch('get_installment3d.php', {
+            if (ccNo.length === 16 && total.length > 0) {
+                fetch('get_installment3dkomisyon.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -185,36 +190,48 @@
                         total: total
                     })
                 })
-                .then(response => response.json())
-                .then(data => {
-                    const installmentsSelect = document.getElementById('installments_number');
-                    installmentsSelect.innerHTML = '<option value="1">Tek Çekim</option>';
-                    
-                    const totalValue = parseFloat(total);
-                    
-                    if (data.installments && Array.isArray(data.installments)) {
-                        data.installments.forEach(installment => {
-                            const option = document.createElement('option');
-                            option.value = installment.installment_number;
-                            
-                            // Taksit başına tutarı hesapla
-                            const installmentAmount = (totalValue / installment.installment_number).toFixed(2);
-                            option.text = `${installment.installment_number} Taksit - ${installmentAmount} ${currency}`;
-                            
-                            installmentsSelect.appendChild(option);
-                        });
-                    } else {
-                        console.error('Hata: Taksit bilgisi alınamadı.', data);
-                        alert('Taksit bilgisi alınamadı. Lütfen bilgilerinizi kontrol edin.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Hata:', error);
-                    alert('Bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
-                });
+                    .then(response => response.json())
+                    .then(data => {
+                        const installmentsSelect = document.getElementById('installments_number');
+                        installmentsSelect.innerHTML = '<option value="1">Tek Çekim</option>';
+
+                        const totalValue = parseFloat(total);
+
+
+
+                        if (data.installments && Array.isArray(data.installments)) {
+                            // Remove the default single payment option since it will be added from the API response
+                            installmentsSelect.innerHTML = '';
+
+                            data.installments.forEach(installment => {
+                                const option = document.createElement('option');
+                                option.value = installment.installment_number;
+
+                                // Parse the amount from the API response
+                                const totalAmount = parseFloat(installment.amount);
+
+                                if (installment.installment_number === 1) {
+                                    option.text = `Tek Çekim - ${totalAmount.toFixed(2)} ${installment.currency}`;
+                                } else {
+                                    // Calculate monthly amount
+                                    const monthlyAmount = (totalAmount / installment.installment_number).toFixed(2);
+                                    option.text = `${installment.installment_number} Taksit - Aylık: ${monthlyAmount} ${installment.currency} (Toplam: ${totalAmount.toFixed(2)} ${installment.currency})`;
+                                }
+
+                                installmentsSelect.appendChild(option);
+                            });
+                        } else {
+                            console.error('Hata: Taksit bilgisi alınamadı.', data);
+                            alert('Taksit bilgisi alınamadı. Lütfen bilgilerinizi kontrol edin.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Hata:', error);
+                        alert('Bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+                    });
+            }
         }
-    }
-</script>
+    </script>
 
 </body>
 

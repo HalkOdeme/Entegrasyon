@@ -15,6 +15,7 @@
         public string invoice_id { get; set; }
         public string credit_card_no { get; set; }
         public string transaction_type { get; set; }
+        public string payment_completed_by { get; set; }
         public int? payment_status { get; set; }
         public int? payment_method { get; set; }
         public object error_code { get; set; }
@@ -27,5 +28,8 @@
         public string hash_key { get; set; }
         public object original_bank_error_code { get; set; }
         public object original_bank_error_description { get; set; }
+
+        public string is_commission_from_user { get; set; }
+        public string commission_by { get; set; }
     }
 }

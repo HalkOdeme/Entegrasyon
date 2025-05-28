@@ -33,11 +33,11 @@ namespace form
             }
 
             string baseUrl = "https://testapp.halkode.com.tr/ccpayment/api/checkstatus";
-            string merchantKey = "$2y$10$XUmbnOQ0nmHsZy8WxIno4euYobTVUzxqtU1h..x32zyfG6qw7OYrq";
+            string merchantKey = "$2y$10$avMpLZvIIEY4brcULaj4u.can9eg3gAnx5s3JGz5Yxd.9zka8YfaO";
 
-            // Kullanıcıdan gelen verileri al
- 
-            string invoiceNumber = invoiceId.Text.Trim();
+        // Kullanıcıdan gelen verileri al
+
+        string invoiceNumber = invoiceId.Text.Trim();
 
             var data = new
             {
@@ -74,10 +74,11 @@ namespace form
             }
         }
 
-        private async Task<string> GetToken()
-        {
+
+            private async Task<string> GetToken()
+            {
             string baseUrl = "https://testapp.halkode.com.tr/ccpayment/api/token";
-            var data = new { app_id = "f77c7d06a417638ccde51c35fd6f6c17", app_secret = "30296568e1d7941de4fd684dbc7203e4" };
+            var data = new { app_id = "de948c3eafdf5582409d0ad9a0809666", app_secret = "b15fba89a18997ab32e36d0b490f9aff" };
             string jsonData = JsonConvert.SerializeObject(data);
 
             using (HttpClient client = new HttpClient())

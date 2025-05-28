@@ -19,7 +19,7 @@
             justify-content: flex-start; /* Üst kısma hizalar */
             align-items: center; /* Yatayda ortalar */
             text-align: center;
-            padding-top: 100px; /* Header'dan boşluk bırakır */
+            padding-top: 40px; /* Header'dan boşluk bırakır */
             z-index: 1;
         }
 
@@ -59,7 +59,9 @@
     <div class="background-image"></div> <!-- Arka plan resmi tüm sayfayı kaplar -->
 
     <div class="content">
-        <h1 class="welcome-text">Hoş Geldiniz</h1>
+         <span style="color:white"><h2>Halk Elektronik Para ve Ödeme Hizmetleri</h2></span>
+         <span style="color:white"><h2>.Net Entegrasyonuna Hoş Geldiniz</h2></span>
+      
     </div>
 
 </asp:Content>

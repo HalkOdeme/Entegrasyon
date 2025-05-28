@@ -17,13 +17,13 @@
         <!-- HTML Form for User Input -->
         <form method="post">
             <label for="merchantKey">MerchantKey:</label>
-            <input type="text" id="merchantKey" name="merchantKey" value="$2y$10$avMpLZvIIEY4brcULaj4u.can9eg3gAnx5s3JGz5Yxd.9zka8YfaO" required><br><br>
+            <input type="text" id="merchantKey" name="merchantKey" value="" required><br><br>
 
             <label for="invoice_id">Fatura ID:</label>
-            <input type="text" id="invoice_id" name="invoice_id" value="s92711df41131" required><br><br>
+            <input type="text" id="invoice_id" name="invoice_id" value="" required><br><br>
 
             <label for="order_id">İşlem Numarası:</label>
-            <input type="text" id="order_id" name="order_id" value="VP17123239825285705" required><br><br>
+            <input type="text" id="order_id" name="order_id" value="" required><br><br>
 
             <button type="submit" name="process_payment" class="btns">Ödemeyi Test Et</button>
         </form>

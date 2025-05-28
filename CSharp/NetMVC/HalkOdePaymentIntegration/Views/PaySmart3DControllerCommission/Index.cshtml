@@ -15,9 +15,9 @@
         <div class="content-container">
 
             <div class="form-container">
-                @using (Html.BeginForm("ProcessPayment", "PaySmart3D", FormMethod.Post))
+                @using (Html.BeginForm("ProcessPayment", "PaySmart3DControllerCommission", FormMethod.Post))
                 {
-                    <h2>3D Ödeme</h2>
+                    <h2>3D Ödeme Komisyonlu</h2>
                     <div class="form-group">
                         <label asp-for="cc_holder_name">Kart Üzerindeki İsim / Soyisim:</label>
                         <input asp-for="cc_holder_name" class="form-control" id="cc_holder_name"
@@ -164,7 +164,7 @@
             };
 
             try {
-                let response = await fetch('@Url.Action("GetInstallments", "PaySmart3D")', {
+                let response = await fetch('@Url.Action("GetInstallmentsss", "PaySmart3DControllerCommission")', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(bodyData)
@@ -188,7 +188,7 @@
                     data.data.forEach(item => {
                         let option = document.createElement("option");
                         option.value = item.installments_number;
-                     option.text = `${item.installments_number} Taksit x ${item.title} (${(item.payable_amount / item.installments_number).toFixed(2)} ${item.currency_code})`;
+                     option.text = `${item.installments_number} Taksit x ${item.title} (${(item.payable_amount  / item.installments_number).toFixed(2)} ${item.currency_code})`;
 
                         select.appendChild(option);
                     });

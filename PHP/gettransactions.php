@@ -17,19 +17,19 @@
         <!-- HTML Form for User Input -->
         <form method="post">
             <label for="invoiceId">Fatura ID:</label>
-            <input type="text" id="invoiceId" name="invoice_id" value="Abcd12456" required><br><br>
+            <input type="text" id="invoiceId" name="invoice_id" value="" required><br><br>
 
             <label for="merchantKey">MerchantKey:</label>
-            <input type="text" id="merchantKey" name="merchant_key" value="$2y$10$avMpLZvIIEY4brcULaj4u.can9eg3gAnx5s3JGz5Yxd.9zka8YfaO" required><br><br>
+            <input type="text" id="merchantKey" name="merchant_key" value="" required><br><br>
 
             <label for="credit_card">Kredi Kartı Numarası:</label>
-            <input type="text" id="credit_card" name="credit_card" value="540061" required><br><br>
+            <input type="text" id="credit_card" name="credit_card" value="" required><br><br>
 
             <label for="amount">Miktar:</label>
-            <input type="number" id="amount" name="amount" value="100.00" step="0.01" required><br><br>
+            <input type="number" id="amount" name="amount" value="100.00" step="" required><br><br>
 
             <label for="currencyCode">KOD:</label>
-            <input type="text" id="currencyCode" name="currency_code" value="TRY" required><br><br>
+            <input type="text" id="currencyCode" name="currency_code" value="" required><br><br>
 
             <button type="submit" name="process_payment" class="btns">Ödemeyi Test Et</button>
         </form>

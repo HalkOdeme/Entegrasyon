@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34018.315
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlatformodePaymentIntegration", "PlatformodePaymentIntegration\PlatformodePaymentIntegration.csproj", "{B111608B-AD4D-40C0-86A6-9C99604C0667}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HalkOdePaymentIntegration", "PlatformodePaymentIntegration\HalkOdePaymentIntegration.csproj", "{B111608B-AD4D-40C0-86A6-9C99604C0667}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

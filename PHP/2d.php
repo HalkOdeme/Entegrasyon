@@ -26,7 +26,7 @@
             <div class="form-group">
                 <label for="cc_holder_name">Kart Üzerindeki İsim / Soyisim:</label>
                 <input type="text" class="form-control"
-                    onkeypress='return ((event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || (event.charCode == 32))'
+                   
                     id="cc_holder_name" name="cc_holder_name" required>
             </div>
             <div class="form-group">
@@ -78,7 +78,7 @@
                 </div>
                 <div class="form-group col-md-6">
                     <label for="invoice_description">Fatura Açıklaması:</label>
-                    <input type="text" class="form-control" onkeydown="return /[a-z]/i.test(event.key)"
+                    <input type="text" class="form-control" 
                         id="invoice_description" name="invoice_description" required>
                 </div>
             </div>
@@ -88,13 +88,8 @@
         <?php
         if (isset($_POST['process_payment'])) { 
             $baseUrl = "https://testapp.halkode.com.tr/ccpayment/api/paySmart2D";
-            $app_id = "f77c7d06a417638ccde51c35fd6f6c17";
-            $appSecret = "30296568e1d7941de4fd684dbc7203e4";
-            $merchantKey = '$2y$10$XUmbnOQ0nmHsZy8WxIno4euYobTVUzxqtU1h..x32zyfG6qw7OYrq';
-
-
-
-
+            include 'degisken.php';
+            
             $total = $_POST['total'];
             $installments_number = $_POST['installments_number'];
             $currencyCode = "TRY";
@@ -208,43 +203,54 @@
 
     <?php include 'footer.php'; ?>
 
-    <script>
+   <script>
     function updateInstallments() {
-    const ccNo = document.getElementById('cc_no').value;
-    const total = document.getElementById('total').value;
+        const ccNo = document.getElementById('cc_no').value;
+        const totalInput = document.getElementById('total');
+        const total = totalInput.value;
+        const currency = 'TL'; // Varsayılan para birimi
 
-    if (ccNo.length === 16 && total.length > 0) {
-        fetch('get_installments.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ cc_no: ccNo, total: total })
-        })
-        .then(response => response.json())
-        .then(data => {
-            const installmentsSelect = document.getElementById('installments_number');
-            installmentsSelect.innerHTML = '<option value="1">Tek Çekim</option>';
-
-            if (data.installments && Array.isArray(data.installments)) {
-                data.installments.forEach(installment => {
-                    const option = document.createElement('option');
-                    option.value = installment.installment_number;
-                    option.text = `${installment.installment_number} Taksit - ${installment.amount} ${installment.currency}`;
-                    installmentsSelect.appendChild(option);
+        if (ccNo.length === 16 && total.length > 0) {
+            fetch('get_installments.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        cc_no: ccNo,
+                        total: total
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const installmentsSelect = document.getElementById('installments_number');
+                    installmentsSelect.innerHTML = '<option value="1">Tek Çekim</option>';
+                    
+                    const totalValue = parseFloat(total);
+                    
+                    if (data.installments && Array.isArray(data.installments)) {
+                        data.installments.forEach(installment => {
+                            const option = document.createElement('option');
+                            option.value = installment.installment_number;
+                            
+                            // Taksit başına tutarı hesapla
+                            const installmentAmount = (totalValue / installment.installment_number).toFixed(2);
+                            option.text = `${installment.installment_number} Taksit - ${installmentAmount} ${currency}`;
+                            
+                            installmentsSelect.appendChild(option);
+                        });
+                    } else {
+                        console.error('Hata: Taksit bilgisi alınamadı.', data);
+                        alert('Taksit bilgisi alınamadı. Lütfen bilgilerinizi kontrol edin.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Hata:', error);
+                    alert('Bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
                 });
-            } else {
-                console.error('Hata: Taksit bilgisi alınamadı.', data);
-                alert('Taksit bilgisi alınamadı. Lütfen bilgilerinizi kontrol edin.');
-            }
-        })
-        .catch(error => {
-            console.error('Hata:', error);
-            alert('Bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
-        });
+        }
     }
-}
-    </script>
+</script>
 </body>
 
 </html>

@@ -8,12 +8,12 @@ namespace form.Settings
     {
         public ApiSettings Configuration()
         {
-            var app_id = "f77c7d06a417638ccde51c35fd6f6c17";
-            var app_secret = "30296568e1d7941de4fd684dbc7203e4";
-            var base_address = "https://testapp.halkode.com.tr/ccpayment";
-            var merchant_key = "$2y$10$XUmbnOQ0nmHsZy8WxIno4euYobTVUzxqtU1h..x32zyfG6qw7OYrq";
-       
 
+            var base_address = "https://testapp.halkode.com.tr/ccpayment";
+            var merchant_key = "$2y$10$avMpLZvIIEY4brcULaj4u.can9eg3gAnx5s3JGz5Yxd.9zka8YfaO"; //Üye İş Yeri Anahtarı --Ödeme Test Üye İşyer
+            var app_id = "de948c3eafdf5582409d0ad9a0809666"; // UYGULAMA ANAHTARI
+            var app_secret = "b15fba89a18997ab32e36d0b490f9aff"; // UYGULAMA PAROLASI
+         
             if (string.IsNullOrWhiteSpace(app_id))
                 throw new ArgumentException("AppId bilgisi eksik. Lütfen Web.config dosyanızı kontrol ediniz.");
 

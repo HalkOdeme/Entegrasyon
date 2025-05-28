@@ -16,7 +16,7 @@ namespace HalkOdePaymentIntegration.Settings
             {
                 IConfiguration config = host.Services.GetRequiredService<IConfiguration>();
 
-                //test
+                ////test
                 var base_address = "https://testapp.halkode.com.tr/ccpayment/";
                 var tokenUrls = "https://testapp.halkode.com.tr/ccpayment/api/token";
 

@@ -11,7 +11,7 @@ namespace form
 {
 
 
-    public partial class _Default
+    public partial class Parameters
     {
     }
 }

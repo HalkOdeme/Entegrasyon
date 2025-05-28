@@ -100,6 +100,7 @@
                             <th>Başlık</th>
                             <th>Para Birimi</th>
                             <th>Taksit</th>
+                            <th>Komisyon Oranı</th>
                         </tr>
                     </thead><tbody>";
 
@@ -107,7 +108,8 @@
                     echo "<tr>
                                 <td>" . htmlspecialchars($item['title']) . "</td>
                                 <td>" . htmlspecialchars($item['currency_code']) . "</td>
-                                <td>" . htmlspecialchars($item['installment']) . "</td>
+                                <td>" . htmlspecialchars($item['installment']) . "</td> 
+                                <td>" . htmlspecialchars(string: $item['merchant_commission_percentage']) . "</td>
 
                             </tr>";
                 }

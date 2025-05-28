@@ -30,7 +30,7 @@ namespace form.Generate
             string iv = Sha1Hash(mt_rand.Next().ToString()).Substring(0, 16);
 
             var apiSettings = new ApiSettingConfiguration().Configuration();
-            string passwordKey = replaceAppSecretWithMmerchantKey ? "$2y$10$XUmbnOQ0nmHsZy8WxIno4euYobTVUzxqtU1h..x32zyfG6qw7OYrq" : "30296568e1d7941de4fd684dbc7203e4";
+            string passwordKey = replaceAppSecretWithMmerchantKey ? apiSettings.MerchantKey : apiSettings.AppSecret;
 
             string password = Sha1Hash(passwordKey);
             string salt = Sha1Hash(mt_rand.Next().ToString()).Substring(0, 4);

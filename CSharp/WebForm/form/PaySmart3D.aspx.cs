@@ -13,9 +13,9 @@ namespace form
     public partial class PaySmart3D : System.Web.UI.Page
     {
         private const string ApiBaseUrl = "https://testapp.halkode.com.tr/ccpayment/api/";
-        private const string MerchantKey = "$2y$10$XUmbnOQ0nmHsZy8WxIno4euYobTVUzxqtU1h..x32zyfG6qw7OYrq";
-        private const string AppId = "f77c7d06a417638ccde51c35fd6f6c17";
-        private const string AppSecret = "30296568e1d7941de4fd684dbc7203e4";
+        private const string MerchantKey = "$2y$10$avMpLZvIIEY4brcULaj4u.can9eg3gAnx5s3JGz5Yxd.9zka8YfaO"; //Üye İş Yeri Anahtarı --Ödeme Test Üye İşyeri
+        private const string AppId = "de948c3eafdf5582409d0ad9a0809666"; // UYGULAMA ANAHTARI
+        private const string AppSecret = "b15fba89a18997ab32e36d0b490f9aff"; // UYGULAMA PAROLAS
 
         protected void Page_Load(object sender, EventArgs e)
         {

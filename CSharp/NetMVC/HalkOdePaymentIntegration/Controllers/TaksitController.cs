@@ -1,6 +1,4 @@
-﻿using HalkOdePaymentIntegration.Contract.Request;
-using HalkOdePaymentIntegration.Contract.Response;
-using HalkOdePaymentIntegration.Generate;
+﻿using HalkOdePaymentIntegration.Contract.Response;
 using HalkOdePaymentIntegration.Settings;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -11,8 +9,8 @@ namespace HalkOdePaymentIntegration.Controllers
     public class TaksitController : Controller
     {
         private const string URL = "api/installments";
-        private readonly HttpClient _httpClient;
-        private readonly ApiSettings _apiSettings;
+        public readonly HttpClient _httpClient;
+        public readonly ApiSettings _apiSettings;
 
         public TaksitController()
         {
@@ -26,45 +24,71 @@ namespace HalkOdePaymentIntegration.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ProcessPayment(string merchant_key)
+        public async Task<IActionResult> Index(string merchant_key)
         {
-            var installmentRequest = CreateRequestParameter(_apiSettings, merchant_key);
-            var installmentResponse = await GetAsync(installmentRequest);
-
-            ViewBag.RequestData = installmentRequest;
-            ViewBag.ResponseData = installmentResponse;
-             
-            return View("Index");
-        }
-
-        private async Task<InstallmentResponse> GetAsync(InstallmentRequest installmentRequest)
-        {
-            var tokenResponse = await new TokenController().GetAsync();
-            var jsonRequest = JsonConvert.SerializeObject(installmentRequest);
-
-            var httpContent = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", tokenResponse?.data?.token);
-
-            try
+            if (string.IsNullOrEmpty(merchant_key))
             {
-                var httpResponse = await _httpClient.PostAsync($"{_apiSettings.BaseAddress}{URL}", httpContent);
-                var jsonResponse = await httpResponse.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<InstallmentResponse>(jsonResponse);
+                ModelState.AddModelError("merchant_key", "merchantkey gereklidir.");
+                return View();
             }
-            catch (Exception ex)
-            {
-                throw new Exception($"Hata: {ex.Message}");
-            }
-        }
 
-        private InstallmentRequest CreateRequestParameter(ApiSettings apiSettings, string merchant_key)
-        {
-            return new InstallmentRequest
+            var token = await GetTokenAsync();
+            if (string.IsNullOrEmpty(token))
             {
-                merchant_key = "$2y$10$12Cg9.DfqlXZQpRbUbE.zuORaObIk4KV7HKs4PcOPTIh0WrEa47l.",
-               
+                ViewBag.Error = "Token alınamadı. Lütfen bilgilerinizi kontrol ediniz.";
+                return View();
+            }
+
+            var data = new
+            {
+                merchant_key = merchant_key
             };
+
+            ViewBag.RequestData = data;
+
+            var jsonResponse = await PostDataAsync($"{_apiSettings.BaseAddress}{URL}", data, token);
+            ViewBag.ResponseData = JsonConvert.DeserializeObject(jsonResponse);
+
+            return View();
+        }
+
+        private async Task<string> GetTokenAsync()
+        {
+            var tokenUrl = _apiSettings.TokenUrls;
+            var data = new
+            {
+                app_id = _apiSettings.AppId,
+                app_secret = _apiSettings.AppSecret
+            };
+
+            using (var client = new HttpClient())
+            {
+                var jsonRequest = JsonConvert.SerializeObject(data);
+                var httpContent = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+                var response = await client.PostAsync(tokenUrl, httpContent);
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var tokenResponse = JsonConvert.DeserializeObject<dynamic>(jsonResponse);
+
+                if (tokenResponse.status_code == 100)
+                {
+                    return tokenResponse.data.token;
+                }
+                return null;
+            }
+        }
+
+        private async Task<string> PostDataAsync(string url, object data, string token)
+        {
+            using (var client = new HttpClient())
+            {
+                var jsonRequest = JsonConvert.SerializeObject(data);
+                var httpContent = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                var response = await client.PostAsync(url, httpContent);
+                return await response.Content.ReadAsStringAsync();
+            }
         }
     }
 }

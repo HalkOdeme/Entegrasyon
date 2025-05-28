@@ -16,10 +16,14 @@
             font-family: "Arial", sans-serif;
         }
 
-      
 
+          
+          .btn-primary{
+            background-color: darkblue;
+             
+           }
 
-        .btn-custom {
+           .btn-custom {
             background-color: #1b0565;
             color: white;
             width: 30%;
@@ -64,10 +68,20 @@
     <div class="container mt-4">
         <h2>Taksit Sorgulama Entegrasyonu</h2>
 
+            <!-- HTML Form for User Input -->
+            <form method="post">
+                <div class="form-group">
+                    <label for="merchant_key">Üye İş Yeri Numarası:</label>
+                    <input type="text" id="merchant_key" name="merchant_key" value="" maxlength="60" class="form-control" required>
+                </div>
+                <button type="submit" name="process_payment" class="btn-primary">Mevcut Komisyonu Göster</button>
+            </form>
+        </div>
+
         @using (Html.BeginForm("ProcessPayment", "Taksit", FormMethod.Post))
-        {
-            <button type="submit" class="btn btn-custom mt-3">Ödemeyi Gönder</button>
-        }
+        @* { *@
+        @*     <button type="submit" class="btn btn-custom mt-3">Ödemeyi Gönder</button> *@
+        @* } *@
 
         @if (ViewBag.RequestData != null)
         {

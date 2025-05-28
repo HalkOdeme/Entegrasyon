@@ -18,12 +18,13 @@ namespace form.Controllers
             _client = new HttpClient();
             _apiSettings = new ApiSettings
             {
-                AppId = "f77c7d06a417638ccde51c35fd6f6c17",
-                AppSecret = "30296568e1d7941de4fd684dbc7203e4",
+             
                 BaseAddress = "https://testapp.halkode.com.tr/ccpayment/",
-                MerchantKey = "$2y$10$XUmbnOQ0nmHsZy8WxIno4euYobTVUzxqtU1h..x32zyfG6qw7OYrq",
-                TokenUrls = "https://testapp.halkode.com.tr/ccpayment/api/token"
-            };
+                TokenUrls = "https://testapp.halkode.com.tr/ccpayment/api/token",
+                MerchantKey = "$2y$10$avMpLZvIIEY4brcULaj4u.can9eg3gAnx5s3JGz5Yxd.9zka8YfaO", //Üye İş Yeri Anahtarı --Ödeme Test Üye İşyeri
+                AppId = "de948c3eafdf5582409d0ad9a0809666", // UYGULAMA ANAHTARI
+                AppSecret = "b15fba89a18997ab32e36d0b490f9aff" // UYGULAMA PAROLAS
+    };
         }
 
         [HttpPost]

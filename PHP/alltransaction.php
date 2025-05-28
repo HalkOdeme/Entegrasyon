@@ -20,7 +20,7 @@
 
             <div class="form-group">
                 <label for="merchant_key" class="mt-2">Fatura Numarası:</label>
-                <input type="text" class="form-control" id="merchant_key" name="merchant_key"  value="$2y$10$tA5Q5IJJv8zpSh0sM.6bueB53HG2VmEKdWnj.HGewu9y5VUk7qvee" readonly>
+                <input type="text" class="form-control" id="merchant_key" name="merchant_key"  value="" readonly>
             </div>
             </div>
 

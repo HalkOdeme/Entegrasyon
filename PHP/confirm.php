@@ -44,9 +44,7 @@ function generateConfrimPaymentHashKey($merchant_key, $invoice_id, $status, $app
 if (isset($_POST['process_payment'])) {
     // Temel değişkenleri tanımla
     $baseUrl = "https://testapp.halkode.com.tr/ccpayment/api/confirmPayment";
-    $app_id = "006f074e818c52970b4212a4767181f3";
-    $appSecret = "ff486ce745834e39ed38908cdd7ceaaf"; // app_secret, token almak için kullanılacak
-    $merchantKey = '$2y$10$tA5Q5IJJv8zpSh0sM.6bueB53HG2VmEKdWnj.HGewu9y5VUk7qvee';
+   include 'degisken.php';
 
     // Token isteği
     $tokenResponse = getToken($app_id, $appSecret);
